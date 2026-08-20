@@ -32,7 +32,7 @@ void main() {
 
     final response = await request('/v1/home', headers: const {});
 
-    expect(response.statusCode, 200);
+    expect(response.statusCode, 500);
     expect(response.body, {
       'data': null,
       'meta': null,

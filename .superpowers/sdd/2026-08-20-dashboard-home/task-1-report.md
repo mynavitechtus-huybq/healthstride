@@ -53,3 +53,37 @@ Kết quả cuối:
 - `createHttpGetRequest(...)` hiện giữ nguyên `statusCode` của response khi body không decode thành JSON object, đồng thời trả failure envelope với `NETWORK_REQUEST_FAILED`.
 - Khi request ném `Exception` trước khi có response, transport trả `ApiResponse` failure với `statusCode: 500` để không throw lên UI.
 - `AppEnvironment` hiện mới tạo boundary cấu hình; wiring thực tế vào `ApiClient` hoặc feature dashboard/home sẽ nằm ở task tiếp theo.
+
+## Bổ sung sửa review
+
+### Findings
+
+- Review đã chỉ ra đúng một lỗi semantics tại boundary `GetRequest -> ApiClient`.
+- Trường hợp backend trả `200` với body non-object như `[]`, `createHttpGetRequest(...)` trước đó tạo failure envelope nhưng vẫn giữ `statusCode: 200`.
+- `ApiClient.get(...)` chỉ map `error` envelope sang `ApiFailure` khi `statusCode >= 400`, nên cùng response đó rơi xuống nhánh `INVALID_RESPONSE` thay vì `NETWORK_REQUEST_FAILED`.
+
+### Fix
+
+- Đã sửa `App/lib/core/network/http_get_request.dart` để response non-object chỉ giữ nguyên `statusCode` khi nó đã là lỗi HTTP (`>= 400`).
+- Nếu non-object JSON đến từ một response `2xx`, adapter giờ trả `statusCode: 500` cùng failure envelope `NETWORK_REQUEST_FAILED`, nhờ đó semantics lỗi được preserve xuyên qua `ApiClient.get(...)`.
+- Không thay đổi nhánh thành công hợp lệ và không thay đổi cách `ApiClient` map các error envelope sẵn có.
+
+### Regression test
+
+- Đã cập nhật `App/test/core/network/http_get_request_test.dart` để xác nhận raw adapter không còn trả `200` cho `[]`.
+- Đã thêm regression test vào `App/test/core/network/api_client_test.dart` đi xuyên qua `createHttpGetRequest(...)` và `ApiClient.get(...)`, dùng response `200 + []`, rồi assert `failure.code == 'NETWORK_REQUEST_FAILED'`.
+
+### Evidence
+
+Đã chạy thành công:
+
+```bash
+cd App
+flutter test test/core/config/app_environment_test.dart test/core/network/http_get_request_test.dart test/core/network/api_client_test.dart test/features/auth/data/firebase_auth_repository_test.dart
+flutter analyze
+```
+
+Kết quả:
+
+- `8` test pass.
+- `flutter analyze` báo `No issues found!`.

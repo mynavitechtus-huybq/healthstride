@@ -18,7 +18,9 @@ GetRequest createHttpGetRequest({required Uri baseUrl, http.Client? client}) {
         return ApiResponse(statusCode: response.statusCode, body: decodedBody);
       }
 
-      return _networkFailure(response.statusCode);
+      return _networkFailure(
+        response.statusCode >= 400 ? response.statusCode : 500,
+      );
     } on FormatException {
       return _networkFailure();
     } on Exception {
