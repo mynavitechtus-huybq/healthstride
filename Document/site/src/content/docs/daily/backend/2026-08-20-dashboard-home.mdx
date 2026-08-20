@@ -1,0 +1,24 @@
+---
+title: 'Dashboard/Home: giữ contract Home API ổn định'
+description: 'Nhật ký siết contract FastAPI cho Dashboard/Home với verified identity và envelope ổn định.'
+---
+
+## Tôi đã làm gì
+
+Mình xuất bản phần học được từ phía Backend của Dashboard/Home bằng cách siết contract test cho `/v1/home` thay vì mở rộng production schema hay service. Evidence từ Task 4 cho thấy API hiện tại đã trả đủ `profile`, `popular_workouts`, và `today_plan`, đồng thời test xác nhận verified Firebase identity được upsert và payload đầu ra khớp decoder phía Flutter.
+
+## Tôi đã làm như thế nào
+
+Mình đọc lại `router`, `service`, `schemas`, rồi chỉ sửa `Backend/tests/api/test_auth_and_home.py` ở mức tối thiểu. Assertion được mở rộng theo field bắt buộc: `profile.display_name`, `profile.email`, `lifetime_points`, `available_points`, `current_streak`, toàn bộ field của `popular_workouts[0]`, và `today_plan == popular_workouts[0]`. Cùng lúc đó, local API được probe với envelope ổn định `{"data": ... , "meta": {}, "error": null}` qua `GET /health`, còn contract test `/v1/home` cho kết quả `8 passed`.
+
+## Tôi gặp khó khăn gì
+
+Khó khăn thật nằm ở local integration chứ không phải contract shape. Record ngày 20 August 2026 cho thấy worktree không có `Backend/.env`, shell không export sẵn `DATABASE_URL`, `REDIS_URL`, `FIREBASE_PROJECT_ID`, hay `GOOGLE_APPLICATION_CREDENTIALS`, và chưa có Firebase Admin credentials local. Vì vậy mình không có evidence để công bố rằng Google ID token đã được verify end-to-end trên local simulator.
+
+## Tôi tháo gỡ ra sao
+
+Mình giữ thay đổi ở đúng biên contract và quality gate có thể kiểm chứng. Thay vì mở rộng schema hoặc service khi chưa có bằng chứng cần thiết, mình xác nhận implementation hiện tại đã đáp ứng decoder Flutter, probe local API bằng Docker services đang chạy, rồi ghi blocker môi trường một cách công khai trong daily record. Sau review, mình còn nới assertion để chỉ khóa các field contract bắt buộc thay vì over-constrain toàn bộ object hay kích thước danh sách.
+
+## Tôi học được gì
+
+Về API Design & Integration, một envelope ổn định và contract field-by-field giúp Flutter decoder tiến nhanh mà không buộc Backend phải thay đổi business rule vô ích. Về Testing & QA, bài học rõ nhất là nên assert đúng phần giao kèo cần bảo vệ: verified identity, các field mà client thật sự đọc, và quan hệ `today_plan == popular_workouts[0]`; assert quá chặt sẽ làm test giòn mà không tăng giá trị bảo vệ.

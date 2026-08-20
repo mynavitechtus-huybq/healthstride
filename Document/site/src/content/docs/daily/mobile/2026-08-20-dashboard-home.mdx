@@ -1,0 +1,24 @@
+---
+title: 'Dashboard/Home: từ Hello đến dữ liệu thật'
+description: 'Nhật ký triển khai Dashboard Flutter với Firebase ID token và FastAPI.'
+---
+
+## Tôi đã làm gì
+
+Mình nối luồng Dashboard/Home thật vào app Flutter thay cho màn chào tĩnh. Phần thay đổi đã đi qua ba lớp: thêm `AppEnvironment` và transport HTTP có Firebase ID token, tạo repository decode `/v1/home` thành `HomeDashboard`, rồi thay placeholder `"Hello Ari"` bằng `HomeScreen` dùng `HomeController` để render profile, điểm, streak, `todayPlan`, và `popularWorkouts`.
+
+## Tôi đã làm như thế nào
+
+Mình bám đúng chuỗi evidence từ Task 1 đến Task 3. Ở Task 1, `createHttpGetRequest(...)` và `AuthRepository.getIdToken(...)` tạo boundary transport có token và giữ semantics lỗi nhất quán khi envelope trả về không hợp lệ. Ở Task 2, `ApiHomeRepository` dùng `ApiClient.get('/v1/home', decoder)` để đưa response vào kiểu `ApiResult<HomeDashboard>`, còn `HomeController` publish `HomeViewState` bất biến cho các trạng thái initial load, refresh, retry, success, và failure. Ở Task 3, `main.dart` được nối với `ApiHomeRepository`, full Flutter suite đạt `29` test pass, `flutter analyze` sạch, và iOS simulator debug build được verify với `--dart-define=API_BASE_URL=https://example.com`, tức URL thực tế đã được build kèm cho simulator là `https://example.com`.
+
+## Tôi gặp khó khăn gì
+
+Khó khăn lớn nhất không nằm ở widget hay controller mà ở môi trường local. Daily record ngày 20 August 2026 ghi rõ không có iOS simulator nào đang boot, không có Android emulator/device nào đang attach, và backend local chưa có Firebase credentials export sẵn. Vì vậy mình không có evidence thật để nói manual Google sign-in rồi kéo để refresh đã pass end-to-end trên simulator.
+
+## Tôi tháo gỡ ra sao
+
+Mình tách phần có thể kiểm chứng khỏi phần phụ thuộc môi trường. Thay vì bịa kết quả simulator, mình siết transport semantics bằng test, thêm test cho repository và controller state, verify full Flutter suite, và giữ blocker manual integration ở trạng thái minh bạch trong daily record. Cách làm này giúp typed envelope, controller state, và authenticated flow ổn định trước khi đợi simulator cùng Firebase local sẵn sàng.
+
+## Tôi học được gì
+
+Bài học lớn là Home flow chỉ thật sự gọn khi trách nhiệm tách rõ: token ở `AuthRepository`, transport ở `createHttpGetRequest(...)`, dữ liệu typed ở `ApiResult<HomeDashboard>`, và trạng thái màn hình ở `HomeViewState`. Khi các lớp này ổn định, việc thay `"Hello Ari"` bằng dashboard thật trở thành bài toán composition và verification, không còn là vá UI bằng dữ liệu giả.
