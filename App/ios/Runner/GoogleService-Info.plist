@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>4571124464-91tl1917vbr72kanf8fkofcsppjoa0a7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.4571124464-91tl1917vbr72kanf8fkofcsppjoa0a7</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDKw8I5bB3WGawuSM_7HzNGWRB3utDyLI8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>4571124464</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.fitness.application.fitnessApplication</string>
+	<key>PROJECT_ID</key>
+	<string>healthstride</string>
+	<key>STORAGE_BUCKET</key>
+	<string>healthstride.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:4571124464:ios:56378b37713ea0c1eb2835</string>
+</dict>
+</plist>
