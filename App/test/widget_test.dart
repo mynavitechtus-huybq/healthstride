@@ -108,10 +108,10 @@ void main() {
       await tester.pump();
       await tester.pumpAndSettle();
 
-      expect(find.text('Welcome back, Ari'), findsOneWidget);
+      expect(find.text('Good Morning 🔥'), findsOneWidget);
       expect(find.text('Hello Ari'), findsNothing);
       expect(find.byTooltip('Change theme'), findsOneWidget);
-      final context = tester.element(find.text('Welcome back, Ari'));
+      final context = tester.element(find.text('Good Morning 🔥'));
       expect(Theme.of(context).colorScheme.primary, const Color(0xFFBBF246));
       expect(
         Theme.of(context).scaffoldBackgroundColor,

@@ -33,7 +33,7 @@ void main() {
     final theme = AppTheme.light();
 
     expect(theme.brightness, Brightness.light);
-    expect(theme.scaffoldBackgroundColor, Colors.white);
+    expect(theme.scaffoldBackgroundColor, const Color(0xFFF7F6FA));
     expect(theme.colorScheme.primary, const Color(0xFF192126));
     expect(theme.colorScheme.secondary, const Color(0xFFBBF246));
   });

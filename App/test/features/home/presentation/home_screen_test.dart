@@ -10,7 +10,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders greeting, metrics, today plan, and popular workouts', (
+  testWidgets('renders the Figma home composition and filters workouts', (
+    tester,
+  ) async {
+    final controller = HomeController(
+      repository: _QueuedHomeRepository([
+        ApiResult.success(
+          _sampleDashboard(
+            popularWorkouts: const [
+              WorkoutSummary(
+                slug: 'core-blast',
+                name: 'Core Blast',
+                description: 'Build endurance.',
+                workoutType: 'strength',
+                durationMinutes: 20,
+                estimatedCalories: 180,
+                imageUrl: null,
+              ),
+              WorkoutSummary(
+                slug: 'hand-training',
+                name: 'Hand Training',
+                description: 'Build upper body strength.',
+                workoutType: 'strength',
+                durationMinutes: 40,
+                estimatedCalories: 600,
+                imageUrl: null,
+              ),
+            ],
+          ),
+        ),
+      ]),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _testApp(HomeScreen(controller: controller, onSignOut: () async {})),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Good Morning 🔥'), findsOneWidget);
+    expect(find.text('Ari'), findsOneWidget);
+    expect(find.byKey(const ValueKey('home-search-field')), findsOneWidget);
+    expect(find.text('Popular Workouts'), findsOneWidget);
+    expect(find.text('Core Blast'), findsOneWidget);
+    expect(find.text('Today Plan'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.byTooltip('Explore'), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('home-search-field')),
+      'Hand',
+    );
+    await tester.pump();
+
+    expect(find.text('Hand Training'), findsOneWidget);
+    expect(find.text('Core Blast'), findsNothing);
+  });
+
+  testWidgets('renders greeting, today plan, and popular workouts', (
     tester,
   ) async {
     final controller = HomeController(
@@ -25,8 +82,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back, Ari'), findsOneWidget);
-    expect(find.text('120'), findsOneWidget);
+    expect(find.text('Good Morning 🔥'), findsOneWidget);
+    expect(find.text('Ari'), findsOneWidget);
     expect(find.text('Morning Cardio'), findsWidgets);
     expect(find.text('Popular Workouts'), findsOneWidget);
   });
@@ -51,9 +108,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Unable to load your dashboard.'), findsOneWidget);
-    expect(find.widgetWithIcon(FilledButton, Icons.refresh), findsOneWidget);
+    expect(
+      find.widgetWithIcon(FilledButton, Icons.refresh_rounded),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.widgetWithIcon(FilledButton, Icons.refresh));
+    await tester.tap(find.widgetWithIcon(FilledButton, Icons.refresh_rounded));
     await tester.pump();
     await tester.pumpAndSettle();
 
@@ -75,14 +135,14 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const ValueKey('home-loading-view')), findsOneWidget);
-    expect(find.text('Welcome back, Ari'), findsNothing);
+    expect(find.text('Good Morning 🔥'), findsNothing);
     expect(find.text('Unable to load your dashboard.'), findsNothing);
 
     completer.complete(ApiResult.success(_sampleDashboard()));
     await tester.pumpAndSettle();
   });
 
-  testWidgets('shows an empty state when there is no plan for today', (
+  testWidgets('shows fallback plans when there is no plan for today', (
     tester,
   ) async {
     final controller = HomeController(
@@ -97,7 +157,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('No plan for today yet.'), findsOneWidget);
+    await tester.drag(
+      find.byType(ListView).first,
+      const Offset(0, -300),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Push Up'), findsOneWidget);
+    expect(find.text('Sit Up'), findsOneWidget);
   });
 
   testWidgets('keeps dashboard data visible when refresh fails', (
@@ -123,7 +190,7 @@ void main() {
 
     expect(find.text('Morning Cardio'), findsWidgets);
 
-    await tester.drag(find.byType(ListView), const Offset(0, 300));
+    await tester.drag(find.byType(ListView).first, const Offset(0, 300));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
@@ -154,8 +221,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('HealthStride'), findsOneWidget);
-    expect(find.text('Welcome back, Athlete'), findsOneWidget);
+    expect(find.text('Good Morning 🔥'), findsOneWidget);
+    expect(find.text('Athlete'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
@@ -193,6 +260,7 @@ HomeDashboard _sampleDashboard({
   String planName = 'Morning Cardio',
   String displayName = 'Ari',
   String email = 'ari@example.com',
+  List<WorkoutSummary>? popularWorkouts,
 }) {
   return HomeDashboard(
     profile: HomeProfile(
@@ -214,16 +282,18 @@ HomeDashboard _sampleDashboard({
                 imageUrl: null,
               ))
         : null,
-    popularWorkouts: const [
-      WorkoutSummary(
-        slug: 'core-blast',
-        name: 'Core Blast',
-        description: 'Build endurance.',
-        workoutType: 'strength',
-        durationMinutes: 20,
-        estimatedCalories: 180,
-        imageUrl: null,
-      ),
-    ],
+    popularWorkouts:
+        popularWorkouts ??
+        const [
+          WorkoutSummary(
+            slug: 'core-blast',
+            name: 'Core Blast',
+            description: 'Build endurance.',
+            workoutType: 'strength',
+            durationMinutes: 20,
+            estimatedCalories: 180,
+            imageUrl: null,
+          ),
+        ],
   );
 }
