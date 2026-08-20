@@ -687,49 +687,43 @@ class _HomeBottomNavigation extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (var index = 0; index < labels.length; index++)
-            Expanded(
-              child: Tooltip(
-                message: labels[index],
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () => onTap(index),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: index == 0 ? AppColors.accent : Colors.transparent,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          iconPaths[index],
-                          width: 19,
-                          height: 19,
+            Tooltip(
+              message: labels[index],
+              child: IconButton(
+                onPressed: () => onTap(index),
+                icon: index == 0
+                    ? DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.accent,
+                          borderRadius: BorderRadius.circular(43),
                         ),
-                        const SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            labels[index],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: index == 0
-                                  ? AppColors.background
-                                  : Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                iconPaths[index],
+                                width: 24,
+                                height: 24,
+                              ),
+                              const SizedBox(width: 4),
+                              const Text(
+                                'Home',
+                                style: TextStyle(
+                                  color: AppColors.background,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    : SvgPicture.asset(iconPaths[index], width: 24, height: 24),
               ),
             ),
         ],
