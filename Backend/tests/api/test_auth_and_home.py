@@ -84,10 +84,29 @@ def test_home_upserts_the_verified_identity_and_returns_data(
     )
 
     response = client.get("/v1/home", headers={"Authorization": "Bearer valid-token"})
+    body = response.json()
 
     assert response.status_code == 200
-    assert response.json()["error"] is None
-    assert response.json()["data"]["profile"]["display_name"] == "Ari"
+    assert body["error"] is None
+    assert body["data"]["profile"] == {
+        "display_name": "Ari",
+        "email": "user@example.com",
+        "lifetime_points": 0,
+        "available_points": 0,
+        "current_streak": 0,
+    }
+    assert body["data"]["popular_workouts"] == [
+        {
+            "slug": "morning-cardio",
+            "name": "Morning Cardio",
+            "description": "A focused cardio session to start the day.",
+            "workout_type": "cardio",
+            "duration_minutes": 30,
+            "estimated_calories": 220,
+            "image_url": None,
+        }
+    ]
+    assert body["data"]["today_plan"] == body["data"]["popular_workouts"][0]
 
 
 def test_home_rejects_missing_bearer_token(client: TestClient) -> None:
