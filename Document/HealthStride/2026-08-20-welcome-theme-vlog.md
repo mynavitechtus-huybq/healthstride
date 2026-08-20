@@ -9,6 +9,7 @@
 ### Hôm nay đã làm gì?
 
 - Đọc node Welcome `1:604` trong Figma và chuyển bố cục sang Flutter.
+- Thêm 3 fake onboarding slides để có thể swipe qua trong lúc Backend chưa cần cung cấp dữ liệu onboarding.
 - Thêm ảnh fitness, lớp chuyển màu ở đáy ảnh, indicator, tiêu đề và nút `Get Started`.
 - Chuyển flow chưa đăng nhập thành `Welcome -> Continue with Google`.
 - Bổ sung ba lựa chọn giao diện: `Light`, `Dark`, `System`.
@@ -24,6 +25,7 @@
 3. Tách `ThemeModePickerButton` dùng chung cho Welcome và Home.
 4. Tách `AppTheme.light()` và giữ `AppTheme.dark()` cùng dùng chung typography Lato và design tokens.
 5. Dùng asset ảnh lấy từ Figma, không nhúng URL tạm thời vào runtime.
+6. Dùng `PageView` và `PageController` để đồng bộ swipe, nút `Next`, indicator và slide hiện tại.
 
 ### Khó khăn gặp phải
 
@@ -44,6 +46,7 @@
 - Auth state và app state có vòng đời khác nhau; gỡ app chưa chắc xóa được session Firebase trên iOS Keychain.
 - Test UI theo hành vi giúp phát hiện contract cũ bị thay đổi khi thêm một màn hình vào flow.
 - Asset từ công cụ thiết kế cần được tải về và quản lý trong repo để tránh phụ thuộc URL có thời hạn.
+- Fake data ở presentation layer giúp hoàn thiện trải nghiệm và kiểm thử gesture trước khi có API thật.
 
 ## Backend
 

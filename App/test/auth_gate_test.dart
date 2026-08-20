@@ -66,6 +66,10 @@ void main() {
 
     await tester.pump();
 
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
     expect(find.text('Get Started'), findsOneWidget);
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
@@ -140,6 +144,10 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
 
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
     expect(find.text('Get Started'), findsOneWidget);
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
