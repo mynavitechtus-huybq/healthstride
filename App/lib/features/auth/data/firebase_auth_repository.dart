@@ -5,7 +5,7 @@ import '../domain/auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   final FirebaseAuth _firebaseAuth;
 
@@ -15,6 +15,10 @@ class FirebaseAuthRepository implements AuthRepository {
   Stream<AuthUser?> authStateChanges() {
     return _firebaseAuth.authStateChanges().map(_toAuthUser);
   }
+
+  @override
+  Future<String?> getIdToken({bool forceRefresh = false}) async =>
+      _firebaseAuth.currentUser?.getIdToken(forceRefresh);
 
   @override
   Future<void> signInWithGoogle() async {

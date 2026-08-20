@@ -18,8 +18,15 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<String?> getIdToken({bool forceRefresh = false}) async => null;
+
+  @override
   Future<void> signInWithGoogle() async {
-    _user = const AuthUser(id: 'user-1', displayName: 'Ari', email: 'ari@example.com');
+    _user = const AuthUser(
+      id: 'user-1',
+      displayName: 'Ari',
+      email: 'ari@example.com',
+    );
     _controller.add(_user);
   }
 
@@ -31,7 +38,9 @@ class FakeAuthRepository implements AuthRepository {
 }
 
 void main() {
-  testWidgets('shows Google sign-in when no Firebase user exists', (tester) async {
+  testWidgets('shows Google sign-in when no Firebase user exists', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: AuthGate(
@@ -47,12 +56,18 @@ void main() {
     expect(find.text('Signed in'), findsNothing);
   });
 
-  testWidgets('shows protected content when Firebase user exists', (tester) async {
+  testWidgets('shows protected content when Firebase user exists', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: AuthGate(
           repository: FakeAuthRepository(
-            const AuthUser(id: 'user-1', displayName: 'Ari', email: 'ari@example.com'),
+            const AuthUser(
+              id: 'user-1',
+              displayName: 'Ari',
+              email: 'ari@example.com',
+            ),
           ),
           signedInBuilder: (_, user) => Text('Welcome ${user.displayName}'),
         ),

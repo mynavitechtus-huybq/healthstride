@@ -10,6 +10,9 @@ class _FakeAuthRepository implements AuthRepository {
   Stream<AuthUser?> authStateChanges() => const Stream.empty();
 
   @override
+  Future<String?> getIdToken({bool forceRefresh = false}) async => null;
+
+  @override
   Future<void> signInWithGoogle() async {}
 
   @override
@@ -17,8 +20,9 @@ class _FakeAuthRepository implements AuthRepository {
 }
 
 void main() {
-  testWidgets('shows the application greeting for an authenticated user',
-      (tester) async {
+  testWidgets('shows the application greeting for an authenticated user', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.dark(),
