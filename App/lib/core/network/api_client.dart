@@ -28,10 +28,7 @@ class ApiResult<T> {
 }
 
 class ApiClient {
-  const ApiClient({
-    required this.tokenProvider,
-    required this.getRequest,
-  });
+  const ApiClient({required this.tokenProvider, required this.getRequest});
 
   final TokenProvider tokenProvider;
   final GetRequest getRequest;
@@ -40,18 +37,33 @@ class ApiClient {
     String path,
     T Function(Map<String, dynamic>) decoder,
   ) async {
-    final token = await tokenProvider();
-    final headers = <String, String>{
-      'Accept': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-    final response = await getRequest(path, headers: headers);
+    late final ApiResponse response;
+    try {
+      final token = await tokenProvider();
+      final headers = <String, String>{
+        'Accept': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
+      response = await getRequest(path, headers: headers);
+    } catch (_) {
+      return const ApiResult.failure(
+        ApiFailure(
+          code: 'NETWORK_REQUEST_FAILED',
+          message: 'Network request failed.',
+        ),
+      );
+    }
+
     final error = response.body['error'];
-    if (response.statusCode >= 400 && error is Map<String, dynamic>) {
+    if (response.statusCode >= 400) {
+      final errorCode = error is Map<String, dynamic> ? error['code'] : null;
+      final errorMessage = error is Map<String, dynamic>
+          ? error['message']
+          : null;
       return ApiResult.failure(
         ApiFailure(
-          code: error['code'] as String? ?? 'UNKNOWN_ERROR',
-          message: error['message'] as String? ?? 'Request failed.',
+          code: errorCode is String ? errorCode : 'UNKNOWN_ERROR',
+          message: errorMessage is String ? errorMessage : 'Request failed.',
         ),
       );
     }

@@ -1,0 +1,24 @@
+---
+title: 'Dashboard/Home: từ Hello đến dữ liệu thật'
+description: 'Nhật ký triển khai Dashboard Flutter với Firebase ID token và FastAPI.'
+---
+
+## Tôi đã làm gì
+
+Mình nối luồng Dashboard/Home thật vào app Flutter thay cho màn chào tĩnh. Phần thay đổi đã đi qua ba lớp: thêm `AppEnvironment` và transport HTTP có Firebase ID token, tạo repository decode `/v1/home` thành `HomeDashboard`, rồi thay placeholder `"Hello Ari"` bằng `HomeScreen` dùng `HomeController` để render profile, điểm, streak, `todayPlan`, và `popularWorkouts`.
+
+## Tôi đã làm như thế nào
+
+Mình bám đúng chuỗi evidence từ transport đến presentation. `createHttpGetRequest(...)` có timeout mặc định 15 giây, còn `ApiClient.get(...)` map lỗi lấy token, lỗi request, và mọi HTTP status từ `400` trở lên sang `ApiFailure` ổn định. `ApiHomeRepository` decode `/v1/home` thành `HomeDashboard`; `HomeController` dùng request generation để completion cũ hoặc completion sau `dispose()` không publish đè state mới. Với Android local development, `android:usesCleartextTraffic="true"` chỉ nằm trong debug manifest để emulator gọi `http://10.0.2.2:8000`, còn release không bật cleartext. iOS simulator debug build trước đó dùng `--dart-define=API_BASE_URL=https://example.com`; `https://example.com` ở đây chỉ là URL xác minh compile/build cho cấu hình, không phải URL Backend local và không phải evidence integration trên simulator.
+
+## Tôi gặp khó khăn gì
+
+Khó khăn có hai phần. Android 9 trở lên không cho cleartext mặc định, nên URL host emulator `http://10.0.2.2:8000` cần cấu hình debug riêng mà không làm yếu release. Phần blocker còn lại thuộc môi trường: không có iOS simulator nào đang boot, không có Android emulator/device nào đang attach, và Backend local chưa có Firebase credentials export sẵn. Vì vậy mình không có evidence thật để nói manual Google sign-in rồi kéo để refresh đã pass end-to-end trên simulator.
+
+## Tôi tháo gỡ ra sao
+
+Mình tách phần có thể kiểm chứng khỏi phần phụ thuộc môi trường. Focused regression suite chạy `24` test cho network, controller và Home screen; full Flutter suite chạy `40` test và `flutter analyze` không có issue. Cả iOS simulator debug build lẫn Android debug APK đều build thành công; test timeout dùng duration inject ngắn nhưng production giữ đúng 15 giây. Android cleartext được giới hạn ở source set `debug`, còn manifest `main`/release giữ nguyên. Manual Google sign-in và pull-to-refresh vẫn được ghi là blocker cho đến khi có simulator/emulator cùng Firebase credentials thật.
+
+## Tôi học được gì
+
+Bài học lớn là Home flow chỉ thật sự gọn khi trách nhiệm tách rõ: token ở `AuthRepository`, transport ở `createHttpGetRequest(...)`, dữ liệu typed ở `ApiResult<HomeDashboard>`, và trạng thái màn hình ở `HomeViewState`. Khi các lớp này ổn định, việc thay `"Hello Ari"` bằng dashboard thật trở thành bài toán composition và verification, không còn là vá UI bằng dữ liệu giả.
