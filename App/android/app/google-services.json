@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "4571124464",
+    "project_id": "healthstride",
+    "storage_bucket": "healthstride.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4571124464:android:195c64d77d67f0f1eb2835",
+        "android_client_info": {
+          "package_name": "com.fitness.application.fitness_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4571124464-0jsl9no9lmeqtcdjrpkdrtg3shdigflh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb7XRpOiMtleA4A55_KFUn_7_he5OyFXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4571124464-0jsl9no9lmeqtcdjrpkdrtg3shdigflh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
