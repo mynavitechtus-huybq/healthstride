@@ -131,6 +131,33 @@ void main() {
     expect(find.text('Morning Cardio'), findsWidgets);
     expect(find.text('Unable to refresh your dashboard.'), findsOneWidget);
   });
+
+  testWidgets('renders the branded dashboard at a 390x844 phone size', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final controller = HomeController(
+      repository: _QueuedHomeRepository([
+        ApiResult.success(_sampleDashboard(displayName: '  ', email: '  ')),
+      ]),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _testApp(HomeScreen(controller: controller, onSignOut: () async {})),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('HealthStride'), findsOneWidget);
+    expect(find.text('Welcome back, Athlete'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Widget _testApp(Widget child) {
@@ -164,11 +191,13 @@ HomeDashboard _sampleDashboard({
   WorkoutSummary? todayPlan,
   bool hasTodayPlan = true,
   String planName = 'Morning Cardio',
+  String displayName = 'Ari',
+  String email = 'ari@example.com',
 }) {
   return HomeDashboard(
-    profile: const HomeProfile(
-      displayName: 'Ari',
-      email: 'ari@example.com',
+    profile: HomeProfile(
+      displayName: displayName,
+      email: email,
       lifetimePoints: 120,
       availablePoints: 90,
       currentStreak: 3,

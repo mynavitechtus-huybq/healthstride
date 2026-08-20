@@ -72,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('HealthStride'),
         actions: [
           IconButton(
             onPressed: () {
@@ -113,9 +114,7 @@ class _HomeDashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     final dashboard = state.dashboard!;
     final textTheme = Theme.of(context).textTheme;
-    final displayName = dashboard.profile.displayName.trim().isEmpty
-        ? dashboard.profile.email
-        : dashboard.profile.displayName;
+    final displayName = _greetingName(dashboard.profile);
 
     return RefreshIndicator(
       onRefresh: onRefresh,
@@ -170,6 +169,16 @@ class _HomeDashboardView extends StatelessWidget {
       ),
     );
   }
+}
+
+String _greetingName(HomeProfile profile) {
+  final displayName = profile.displayName.trim();
+  if (displayName.isNotEmpty) return displayName;
+
+  final email = profile.email.trim();
+  if (email.isNotEmpty) return email;
+
+  return 'Athlete';
 }
 
 class _MetricsSection extends StatelessWidget {

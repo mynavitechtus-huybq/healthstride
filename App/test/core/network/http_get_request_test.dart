@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fitness_application/core/network/http_get_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -41,5 +43,23 @@ void main() {
         'message': 'Network request failed.',
       },
     });
+  });
+
+  test('returns a stable failure when the HTTP request times out', () async {
+    final pendingResponse = Completer<http.Response>();
+    final request = createHttpGetRequest(
+      baseUrl: Uri.parse('http://localhost:8000'),
+      client: MockClient((request) => pendingResponse.future),
+      timeout: Duration.zero,
+    );
+
+    final response = await request('/v1/home', headers: const {});
+
+    expect(response.statusCode, 500);
+    expect(response.body['error'], {
+      'code': 'NETWORK_REQUEST_FAILED',
+      'message': 'Network request failed.',
+    });
+    pendingResponse.complete(http.Response('{}', 200));
   });
 }

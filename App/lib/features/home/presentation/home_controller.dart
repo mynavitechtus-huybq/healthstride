@@ -7,35 +7,62 @@ class HomeController extends ValueNotifier<HomeViewState> {
   HomeController({required this.repository}) : super(const HomeViewState());
 
   final HomeRepository repository;
+  var _requestGeneration = 0;
+  var _isDisposed = false;
 
   Future<void> load() async {
+    if (_isDisposed) return;
+    final requestGeneration = ++_requestGeneration;
     final currentState = value;
     if (currentState.dashboard == null) {
       value = currentState.copyWith(failure: null, isInitialLoading: true);
     } else if (currentState.failure != null) {
       value = currentState.copyWith(failure: null);
     }
+    if (!_canPublish(requestGeneration)) return;
 
     final result = await repository.fetchDashboard();
-    _publishResult(result, fallbackDashboard: currentState.dashboard);
+    _publishResult(
+      result,
+      requestGeneration: requestGeneration,
+      fallbackDashboard: currentState.dashboard,
+    );
   }
 
   Future<void> refresh() async {
+    if (_isDisposed) return;
     if (value.dashboard == null) return load();
 
+    final requestGeneration = ++_requestGeneration;
     final currentState = value;
     value = currentState.copyWith(failure: null, isRefreshing: true);
+    if (!_canPublish(requestGeneration)) return;
 
     final result = await repository.fetchDashboard();
-    _publishResult(result, fallbackDashboard: currentState.dashboard);
+    _publishResult(
+      result,
+      requestGeneration: requestGeneration,
+      fallbackDashboard: currentState.dashboard,
+    );
   }
 
   Future<void> retry() => load();
 
+  @override
+  void dispose() {
+    if (_isDisposed) return;
+    _isDisposed = true;
+    _requestGeneration += 1;
+    super.dispose();
+  }
+
   void _publishResult(
     ApiResult<HomeDashboard> result, {
+    required int requestGeneration,
     required HomeDashboard? fallbackDashboard,
   }) {
+    if (!_canPublish(requestGeneration)) return;
+
     if (result.data != null) {
       value = HomeViewState(dashboard: result.data);
       return;
@@ -45,6 +72,10 @@ class HomeController extends ValueNotifier<HomeViewState> {
       dashboard: fallbackDashboard,
       failure: result.failure,
     );
+  }
+
+  bool _canPublish(int requestGeneration) {
+    return !_isDisposed && requestGeneration == _requestGeneration;
   }
 }
 

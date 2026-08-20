@@ -4,15 +4,18 @@ import 'package:http/http.dart' as http;
 
 import 'api_client.dart';
 
-GetRequest createHttpGetRequest({required Uri baseUrl, http.Client? client}) {
+GetRequest createHttpGetRequest({
+  required Uri baseUrl,
+  http.Client? client,
+  Duration timeout = const Duration(seconds: 15),
+}) {
   final effectiveClient = client ?? http.Client();
 
   return (path, {required headers}) async {
     try {
-      final response = await effectiveClient.get(
-        baseUrl.resolve(path),
-        headers: headers,
-      );
+      final response = await effectiveClient
+          .get(baseUrl.resolve(path), headers: headers)
+          .timeout(timeout);
       final decodedBody = jsonDecode(response.body);
       if (decodedBody is Map<String, dynamic>) {
         return ApiResponse(statusCode: response.statusCode, body: decodedBody);
