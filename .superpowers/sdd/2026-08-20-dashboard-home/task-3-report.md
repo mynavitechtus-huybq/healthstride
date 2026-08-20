@@ -122,3 +122,110 @@ Nhóm test này cũng pass sau khi hoàn tất implementation.
 ## Kết luận
 
 Task 3 đã được implement xong trong worktree hiện tại, verified bằng test, analyzer và iOS simulator debug build trên Thursday, August 20, 2026.
+
+---
+
+## Bổ sung sau review chất lượng - Thursday, August 20, 2026
+
+### Review findings đã sửa
+
+1. `App/lib/main.dart`: `_AuthenticatedHomeScreenState` tạo `HomeController` một lần từ `widget.repository`, nên nếu `homeRepository` đổi cho cùng signed-in user thì controller cũ có thể bị giữ lại.
+2. `App/test/features/home/presentation/home_screen_test.dart`: thiếu direct widget test cho initial loading state khi `fetchDashboard()` còn pending.
+
+### Fix áp dụng
+
+- `App/lib/main.dart`
+  - đổi `_controller` từ `late final` sang `late`
+  - thêm `didUpdateWidget`
+  - nếu `oldWidget.repository != widget.repository`, `dispose()` controller cũ và tạo `HomeController(repository: widget.repository)` mới
+- `App/lib/features/home/presentation/home_screen.dart`
+  - thêm `ValueKey('home-loading-view')` cho loading placeholder `ListView`
+- `App/test/widget_test.dart`
+  - thêm regression test:
+    - `reloads the authenticated dashboard when homeRepository changes for the same user`
+- `App/test/features/home/presentation/home_screen_test.dart`
+  - thêm direct widget test:
+    - `renders the initial loading placeholder while pending`
+
+### TDD evidence
+
+Đã viết test trước rồi xác nhận đỏ:
+
+- regression test cho repository swap fail vì `Recovery Walk` không xuất hiện sau khi thay `homeRepository` cho cùng user
+- loading test fail vì chưa tìm thấy `ValueKey('home-loading-view')`
+
+Sau đó implement fix tối thiểu và rerun để kéo test sang xanh.
+
+### Exact commands/results
+
+#### Red verification
+
+```bash
+flutter test test/widget_test.dart test/features/home/presentation/home_screen_test.dart
+```
+
+Kết quả đỏ:
+
+- `reloads the authenticated dashboard when homeRepository changes for the same user`
+  - `Expected: at least one matching candidate`
+  - `Actual: Found 0 widgets with text "Recovery Walk"`
+- `renders the initial loading placeholder while pending`
+  - `Expected: exactly one matching candidate`
+  - `Actual: Found 0 widgets with key [<'home-loading-view'>]`
+
+#### Focused green verification
+
+```bash
+flutter test test/widget_test.dart test/features/home/presentation/home_screen_test.dart
+```
+
+Kết quả:
+
+- `All tests passed!`
+
+#### Required covering Home widget/auth tests
+
+```bash
+flutter test test/widget_test.dart test/auth_gate_test.dart test/features/home/presentation/home_screen_test.dart
+```
+
+Kết quả:
+
+- `00:00 +9: All tests passed!`
+
+#### Required full test suite
+
+```bash
+flutter test
+```
+
+Kết quả:
+
+- `00:02 +29: All tests passed!`
+
+#### Required analyzer run
+
+```bash
+flutter analyze
+```
+
+Kết quả cuối:
+
+- `No issues found! (ran in 1.7s)`
+
+Ghi chú:
+
+- Một lượt `flutter analyze` trung gian đã báo:
+  - `warning • The value of the field '_user' isn't used • test/widget_test.dart:34:19 • unused_field`
+- Đã sửa test helper `_StableAuthRepository` rồi rerun `flutter analyze` để về sạch.
+
+#### Required iOS simulator debug build
+
+```bash
+flutter build ios --simulator --debug --dart-define=API_BASE_URL=https://example.com
+```
+
+Kết quả cuối:
+
+- `Xcode build done. 8.3s`
+- `✓ Built build/ios/iphonesimulator/Runner.app`

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fitness_application/core/network/api_client.dart';
 import 'package:fitness_application/features/home/domain/home_dashboard.dart';
 import 'package:fitness_application/features/home/domain/home_repository.dart';
@@ -56,6 +58,28 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Recovery Walk'), findsWidgets);
+  });
+
+  testWidgets('renders the initial loading placeholder while pending', (
+    tester,
+  ) async {
+    final completer = Completer<ApiResult<HomeDashboard>>();
+    final controller = HomeController(
+      repository: _DeferredHomeRepository(completer.future),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _testApp(HomeScreen(controller: controller, onSignOut: () async {})),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('home-loading-view')), findsOneWidget);
+    expect(find.text('Welcome back, Ari'), findsNothing);
+    expect(find.text('Unable to load your dashboard.'), findsNothing);
+
+    completer.complete(ApiResult.success(_sampleDashboard()));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('shows an empty state when there is no plan for today', (
@@ -125,6 +149,15 @@ class _QueuedHomeRepository implements HomeRepository {
     _index += 1;
     return _results[index];
   }
+}
+
+class _DeferredHomeRepository implements HomeRepository {
+  _DeferredHomeRepository(this._result);
+
+  final Future<ApiResult<HomeDashboard>> _result;
+
+  @override
+  Future<ApiResult<HomeDashboard>> fetchDashboard() => _result;
 }
 
 HomeDashboard _sampleDashboard({

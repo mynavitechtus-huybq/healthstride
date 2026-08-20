@@ -25,6 +25,27 @@ class _FakeAuthRepository implements AuthRepository {
   Future<void> signOut() async {}
 }
 
+class _StableAuthRepository implements AuthRepository {
+  _StableAuthRepository(AuthUser? user)
+    : _stream = Stream<AuthUser?>.multi((controller) {
+        controller.add(user);
+      }, isBroadcast: true);
+
+  final Stream<AuthUser?> _stream;
+
+  @override
+  Stream<AuthUser?> authStateChanges() => _stream;
+
+  @override
+  Future<String?> getIdToken({bool forceRefresh = false}) async => null;
+
+  @override
+  Future<void> signInWithGoogle() async {}
+
+  @override
+  Future<void> signOut() async {}
+}
+
 class _FakeHomeRepository implements HomeRepository {
   const _FakeHomeRepository(this._result);
 
@@ -93,6 +114,87 @@ void main() {
         Theme.of(context).scaffoldBackgroundColor,
         const Color(0xFF192126),
       );
+    },
+  );
+
+  testWidgets(
+    'reloads the authenticated dashboard when homeRepository changes for the same user',
+    (tester) async {
+      final authRepository = _StableAuthRepository(
+        const AuthUser(
+          id: 'user-1',
+          email: 'ari@example.com',
+          displayName: 'Ari',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MyApp(
+          authRepository: authRepository,
+          homeRepository: _FakeHomeRepository(
+            ApiResult.success(
+              HomeDashboard(
+                profile: const HomeProfile(
+                  displayName: 'Ari',
+                  email: 'ari@example.com',
+                  lifetimePoints: 120,
+                  availablePoints: 90,
+                  currentStreak: 3,
+                ),
+                todayPlan: const WorkoutSummary(
+                  slug: 'morning-cardio',
+                  name: 'Morning Cardio',
+                  description: 'Start strong.',
+                  workoutType: 'cardio',
+                  durationMinutes: 30,
+                  estimatedCalories: 220,
+                  imageUrl: null,
+                ),
+                popularWorkouts: const [],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Morning Cardio'), findsWidgets);
+      expect(find.text('Recovery Walk'), findsNothing);
+
+      await tester.pumpWidget(
+        MyApp(
+          authRepository: authRepository,
+          homeRepository: _FakeHomeRepository(
+            ApiResult.success(
+              HomeDashboard(
+                profile: const HomeProfile(
+                  displayName: 'Ari',
+                  email: 'ari@example.com',
+                  lifetimePoints: 120,
+                  availablePoints: 90,
+                  currentStreak: 3,
+                ),
+                todayPlan: const WorkoutSummary(
+                  slug: 'recovery-walk',
+                  name: 'Recovery Walk',
+                  description: 'Reset for tomorrow.',
+                  workoutType: 'recovery',
+                  durationMinutes: 25,
+                  estimatedCalories: 140,
+                  imageUrl: null,
+                ),
+                popularWorkouts: const [],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Recovery Walk'), findsWidgets);
+      expect(find.text('Morning Cardio'), findsNothing);
     },
   );
 }

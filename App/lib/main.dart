@@ -89,11 +89,20 @@ class _AuthenticatedHomeScreen extends StatefulWidget {
 }
 
 class _AuthenticatedHomeScreenState extends State<_AuthenticatedHomeScreen> {
-  late final HomeController _controller;
+  late HomeController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = HomeController(repository: widget.repository);
+  }
+
+  @override
+  void didUpdateWidget(_AuthenticatedHomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository == widget.repository) return;
+
+    _controller.dispose();
     _controller = HomeController(repository: widget.repository);
   }
 
