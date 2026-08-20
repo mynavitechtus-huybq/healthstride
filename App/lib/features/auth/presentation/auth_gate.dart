@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../domain/auth_repository.dart';
+import 'google_mark.dart';
+import 'welcome_screen.dart';
 
 typedef SignedInBuilder = Widget Function(BuildContext context, AuthUser user);
 
@@ -8,11 +10,15 @@ class AuthGate extends StatefulWidget {
   const AuthGate({
     required this.repository,
     required this.signedInBuilder,
+    this.themeMode = ThemeMode.system,
+    this.onThemeModeChanged,
     super.key,
   });
 
   final AuthRepository repository;
   final SignedInBuilder signedInBuilder;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode>? onThemeModeChanged;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -21,6 +27,7 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   bool _isSigningIn = false;
   bool _hasSignInError = false;
+  bool _hasStarted = false;
 
   Future<void> _signIn() async {
     setState(() {
@@ -57,6 +64,14 @@ class _AuthGateState extends State<AuthGate> {
           return widget.signedInBuilder(context, user);
         }
 
+        if (!_hasStarted) {
+          return WelcomeScreen(
+            themeMode: widget.themeMode,
+            onThemeModeChanged: widget.onThemeModeChanged ?? (_) {},
+            onGetStarted: () => setState(() => _hasStarted = true),
+          );
+        }
+
         return Scaffold(
           body: SafeArea(
             child: Center(
@@ -69,7 +84,7 @@ class _AuthGateState extends State<AuthGate> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'HealthStride',
+                        'Welcome to HealthStride',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
@@ -86,9 +101,11 @@ class _AuthGateState extends State<AuthGate> {
                             ? const SizedBox(
                                 height: 18,
                                 width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
-                            : const Icon(Icons.login),
+                            : const GoogleMark(),
                         label: const Text('Continue with Google'),
                       ),
                       if (_hasSignInError) ...[

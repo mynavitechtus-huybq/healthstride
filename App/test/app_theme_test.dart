@@ -28,4 +28,13 @@ void main() {
     expect(theme.colorScheme.onPrimary, const Color(0xFF192126));
     expect(theme.colorScheme.error, const Color(0xFFED4747));
   });
+
+  test('provides a light semantic theme with the same accent', () {
+    final theme = AppTheme.light();
+
+    expect(theme.brightness, Brightness.light);
+    expect(theme.scaffoldBackgroundColor, Colors.white);
+    expect(theme.colorScheme.primary, const Color(0xFF192126));
+    expect(theme.colorScheme.secondary, const Color(0xFFBBF246));
+  });
 }
