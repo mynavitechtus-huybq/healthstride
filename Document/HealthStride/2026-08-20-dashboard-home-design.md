@@ -1,117 +1,117 @@
-# HealthStride Dashboard/Home Delivery Design
+# Đặc tả triển khai Dashboard/Home HealthStride
 
-**Status:** Approved for planning
+**Trạng thái:** Đã duyệt, sẵn sàng lập kế hoạch
 
-**Goal:** Replace the authenticated Hello screen with a responsive Dashboard that renders the verified user's Home summary from `GET /v1/home`, while publishing an evidence-led Mobile and Backend Vlog for the feature.
+**Mục tiêu:** Thay màn hình Hello sau đăng nhập bằng Dashboard responsive, hiển thị dữ liệu Home của người dùng đã được xác thực từ `GET /v1/home`; đồng thời xuất bản Vlog có bằng chứng kỹ thuật cho Mobile và Backend.
 
-## Scope
+## Phạm vi
 
-This delivery implements only the data already provided by the August Home contract:
+Đợt triển khai này chỉ dùng dữ liệu đã có trong Home contract tháng 8:
 
-- personalized greeting from `profile.display_name`;
-- lifetime points, available points, and current streak;
-- one Today Plan card when `today_plan` exists;
-- a Popular Workouts list from `popular_workouts`;
-- initial loading, retryable failure, and pull-to-refresh states;
-- an authenticated bearer request using a freshly obtained Firebase ID token.
+- lời chào cá nhân hóa từ `profile.display_name`;
+- điểm tích lũy, điểm khả dụng và streak hiện tại;
+- thẻ Today Plan khi `today_plan` tồn tại;
+- danh sách Popular Workouts từ `popular_workouts`;
+- trạng thái tải lần đầu, lỗi có thể thử lại và kéo để làm mới;
+- request Bearer đã xác thực, dùng Firebase ID token mới lấy.
 
-The following stay out of this delivery: level progress, goals, challenges, badges, reward store, navigation tabs, workout logging, local persistent cache, and automatic sign-out on a `401`. Those requirements remain future slices because the current `/v1/home` contract does not yet provide their data or destination flows.
+Không thuộc phạm vi đợt này: tiến độ cấp độ, mục tiêu, thử thách, huy hiệu, cửa hàng quà, navigation tabs, log workout, cache bền vững trên thiết bị và tự động đăng xuất khi `401`. Đây là các slice kế tiếp vì contract `/v1/home` hiện chưa trả dữ liệu hoặc luồng điều hướng cần thiết.
 
-## Architecture
+## Kiến trúc
 
-### Mobile boundaries
+### Ranh giới Mobile
 
-`App/lib/features/home` becomes a feature-first module with three layers:
+`App/lib/features/home` trở thành module theo feature, gồm ba tầng:
 
-| Layer | Responsibility |
+| Tầng | Trách nhiệm |
 | --- | --- |
-| `domain` | Immutable dashboard models and the `HomeRepository` interface. No Flutter or HTTP dependency. |
-| `data` | `ApiHomeRepository`, which calls `GET /v1/home` through the existing `ApiClient`, decodes the success envelope, and returns a typed result. |
-| `presentation` | `HomeController` owns loading, refreshing, data, and failure state. Dashboard widgets render those states and invoke `load` or `refresh`. |
+| `domain` | Model Dashboard bất biến và interface `HomeRepository`. Không phụ thuộc Flutter hay HTTP. |
+| `data` | `ApiHomeRepository`, gọi `GET /v1/home` qua `ApiClient` hiện có, decode success envelope và trả kết quả typed. |
+| `presentation` | `HomeController` sở hữu trạng thái loading, refreshing, data và failure. Dashboard widgets chỉ render state và gọi `load` hoặc `refresh`. |
 
-The app composition root creates the production transport with `package:http`, obtains the Firebase ID token through `AuthRepository`, and passes dependencies into the signed-in Home screen. `API_BASE_URL` comes only from `--dart-define`; there is no committed local URL or secret.
+Composition root của app tạo production transport bằng `package:http`, lấy Firebase ID token qua `AuthRepository` và truyền dependency vào màn Home sau đăng nhập. `API_BASE_URL` chỉ đến từ `--dart-define`; không commit URL local hay secret.
 
-`AuthRepository` gains one token method, `Future<String?> getIdToken({bool forceRefresh = false})`. Its Firebase implementation delegates to the active Firebase user. The API client already accepts a token provider, so no Firebase or HTTP type leaks into the Home domain layer.
+`AuthRepository` được thêm `Future<String?> getIdToken({bool forceRefresh = false})`. Firebase implementation gọi đến Firebase user đang hoạt động. `ApiClient` hiện đã nhận token provider, vì vậy Firebase và HTTP không rò rỉ vào Home domain layer.
 
-### Data flow
+### Luồng dữ liệu
 
-1. Firebase Auth emits an authenticated `AuthUser`.
-2. The app builds the Home feature with an `ApiClient` whose token provider asks `AuthRepository` for the current ID token.
-3. `HomeController.load()` enters initial loading and asks `HomeRepository.fetchDashboard()` for data.
-4. `ApiHomeRepository` calls `/v1/home`; `ApiClient` adds `Accept: application/json` and `Authorization: Bearer <Firebase ID token>`.
-5. FastAPI verifies the token, upserts the local user, reads featured workouts, and returns the standard `{ data, meta, error }` envelope.
-6. The repository decodes `data.profile`, `data.today_plan`, and `data.popular_workouts` into domain models. The controller publishes the success state; the screen renders it.
-7. A pull-to-refresh calls the same repository operation while keeping previous data on screen. A successful future Log Workout slice can call the controller refresh when it returns to Home.
+1. Firebase Auth phát ra `AuthUser` đã đăng nhập.
+2. App dựng Home feature với `ApiClient`; token provider lấy ID token hiện tại từ `AuthRepository`.
+3. `HomeController.load()` vào trạng thái tải lần đầu và gọi `HomeRepository.fetchDashboard()`.
+4. `ApiHomeRepository` gọi `/v1/home`; `ApiClient` thêm `Accept: application/json` và `Authorization: Bearer <Firebase ID token>`.
+5. FastAPI xác thực token, upsert user local, đọc workout nổi bật và trả standard envelope `{ data, meta, error }`.
+6. Repository decode `data.profile`, `data.today_plan` và `data.popular_workouts` thành domain model. Controller phát success state để screen render.
+7. Kéo để làm mới gọi cùng operation nhưng giữ dữ liệu cũ trên màn. Slice Log Workout sau này có thể gọi refresh khi quay về Home.
 
-## Presentation Design
+## Thiết kế hiển thị
 
-The screen adapts `SCR-HOME-10` and the established dark `AppTheme` without absolute-positioned Figma copying. It is one vertically scrollable screen with a `SafeArea`:
+Màn hình bám theo `SCR-HOME-10` và dark `AppTheme` hiện có, không copy Figma bằng vị trí tuyệt đối. Đây là một màn cuộn dọc trong `SafeArea`:
 
-1. top row: `HealthStride` and a sign-out icon button;
-2. greeting using the first non-empty display-name fallback, then email, then `Athlete`;
-3. a compact metrics band for Lifetime points, Available points, and current streak;
-4. Today Plan as the primary card, or a friendly empty message when `today_plan` is null;
-5. Popular Workouts as compact cards with workout type, duration, calories, and description.
+1. hàng trên cùng: `HealthStride` và icon button đăng xuất;
+2. lời chào, ưu tiên display name hợp lệ, sau đó email, cuối cùng là `Athlete`;
+3. metrics band gọn gồm Lifetime points, Available points và current streak;
+4. Today Plan là card chính, hoặc thông điệp thân thiện khi `today_plan` là `null`;
+5. Popular Workouts là các compact card có workout type, duration, calories và description.
 
-Cards use the design-system spacing, Lato typography, neutral surfaces, and accent colors. Image URLs are not loaded in this slice because the seeded contract returns `null`; the card uses an icon selected from `workout_type` instead. Text wraps and the layout stays usable on both iPhone and Android phone widths.
+Card dùng spacing trong design system, Lato typography, neutral surfaces và accent colors. Ở slice này không tải image URL vì dữ liệu seed hiện trả `null`; card dùng icon chọn theo `workout_type`. Text phải wrap và layout dùng được trên cả iPhone lẫn Android phone width.
 
-## Error Handling
+## Xử lý lỗi
 
-| Situation | Controller state | User experience |
+| Tình huống | Trạng thái Controller | Trải nghiệm người dùng |
 | --- | --- | --- |
-| First request pending | loading without data | structured progress placeholders; sign-out stays available |
-| Refresh pending with data | refreshing with data | `RefreshIndicator`; existing data remains visible |
-| Network, timeout, malformed JSON, `5xx`, or non-auth envelope error | failure | retryable in-content error with a Retry button; no raw backend error details |
-| `401 AUTHENTICATION_REQUIRED` | failure | user-safe session message and Retry. This slice does not sign out automatically; automatic refresh/sign-out is a dedicated auth lifecycle change. |
-| Valid payload with no featured workout | success | metrics plus the Today Plan empty message and an empty Popular Workouts section |
+| Request đầu tiên đang chờ | loading không có data | progress placeholder có cấu trúc; vẫn có thể đăng xuất |
+| Refresh đang chờ khi đã có data | refreshing có data | `RefreshIndicator`; dữ liệu cũ vẫn hiển thị |
+| Lỗi mạng, timeout, JSON sai dạng, `5xx` hoặc error envelope không phải auth | failure | lỗi trong nội dung có nút Retry; không hiện raw backend detail |
+| `401 AUTHENTICATION_REQUIRED` | failure | message an toàn về session và Retry. Slice này không tự động sign out; refresh/sign-out là thay đổi auth lifecycle riêng. |
+| Payload hợp lệ nhưng không có workout nổi bật | success | vẫn có metrics, Today Plan empty message và Popular Workouts rỗng |
 
-The UI uses the stable `ApiFailure.code` only for control flow and tests. It renders curated copy rather than exposing backend messages or exceptions.
+UI chỉ dùng `ApiFailure.code` ổn định cho control flow và test. Nội dung hiển thị là copy đã chọn, không lộ backend message hay exception.
 
-## Testing Strategy
+## Chiến lược kiểm thử
 
 ### Flutter
 
-- Unit-test `ApiHomeRepository` with a fake `ApiClient`: success decoding, `today_plan: null`, error propagation, and invalid payload handling.
-- Unit-test `HomeController`: initial load success, refresh keeps previous data, and failure/retry state.
-- Widget-test Dashboard: loading, error with Retry, empty plan, and populated summary; assert metrics and workout titles are visible.
-- Extend the authenticated app test to verify the previous Hello greeting is replaced by the Dashboard entry state.
-- Run `flutter analyze` and the complete `flutter test` suite. Manually run the app against local FastAPI using a simulator-specific base URL documented in the Vlog.
+- Unit test `ApiHomeRepository` với fake `ApiClient`: decode thành công, `today_plan: null`, propagate error và invalid payload.
+- Unit test `HomeController`: tải lần đầu thành công, refresh giữ data cũ, failure và Retry state.
+- Widget test Dashboard: loading, error có Retry, empty plan và populated summary; assert thấy metrics và workout titles.
+- Mở rộng authenticated app test để xác minh Hello greeting cũ đã được thay bằng Dashboard entry state.
+- Chạy `flutter analyze` và toàn bộ `flutter test`. Chạy tay app với FastAPI local theo URL dành cho simulator được ghi trong Vlog.
 
 ### Backend
 
-The endpoint is already implemented and tested. This slice runs the existing Home API test suite as a contract regression check. If the mobile decoder exposes an ambiguity, add the smallest backend contract test that makes the response shape explicit; no unrelated backend refactor is in scope.
+Endpoint đã được implement và test. Slice này chạy Home API test hiện có như contract regression check. Nếu mobile decoder phát hiện contract mơ hồ, thêm backend contract test nhỏ nhất để chốt response shape; không refactor Backend ngoài phạm vi.
 
 ### Documentation site
 
-Run `pnpm build` in `Document/site`. The published Vlog pages must be reachable under distinct `daily/mobile` and `daily/backend` routes and be included in their respective indexes.
+Chạy `pnpm build` trong `Document/site`. Các trang Vlog phải có route riêng dưới `daily/mobile` và `daily/backend`, đồng thời được đưa vào index tương ứng.
 
-## Vlog Documentation Format
+## Định dạng tài liệu Vlog
 
-Each feature has two public MDX entries, one in `Document/site/src/content/docs/daily/mobile/` and one in `Document/site/src/content/docs/daily/backend/`. The existing Markdown diary under `Document/HealthStride/daily/` remains the detailed project record; the MDX pages are the reader-facing Vlog.
+Mỗi feature có hai MDX entry public: một trong `Document/site/src/content/docs/daily/mobile/` và một trong `Document/site/src/content/docs/daily/backend/`. Markdown diary hiện có trong `Document/HealthStride/daily/` vẫn là project record chi tiết; MDX là Vlog dành cho người đọc.
 
-Every Vlog entry follows the same narrative sequence:
+Mỗi Vlog đi theo cùng một mạch kể chuyện:
 
-1. **What I built**: user outcome, scope boundary, and the UI/API artifact.
-2. **How I built it**: the smallest useful architecture diagram in prose, key decisions, commands, and tests.
-3. **What was difficult**: a real integration constraint or discovery from the work. It must not invent a problem; when no blocker occurs, it explicitly states that and explains the risk checked.
-4. **How I resolved it**: diagnosis, option considered, implementation choice, and verification evidence.
-5. **What I learned**: reusable engineering lesson connected to the hard-skills matrix.
+1. **Tôi đã làm gì**: user outcome, scope boundary và UI/API artifact.
+2. **Tôi đã làm như thế nào**: kiến trúc nhỏ nhất cần thiết, các quyết định chính, command và test.
+3. **Tôi gặp khó khăn gì**: integration constraint hoặc discovery có thật. Nếu không có blocker, nói rõ điều đó và nêu risk đã kiểm tra; không bịa vấn đề.
+4. **Tôi tháo gỡ ra sao**: chẩn đoán, lựa chọn đã cân nhắc, quyết định triển khai và bằng chứng verify.
+5. **Tôi học được gì**: bài học có thể tái sử dụng, liên kết với hard-skills matrix.
 
-The Mobile Vlog focuses on Firebase ID-token injection, typed envelopes, state ownership, simulator-to-local-server networking, and widget tests. The Backend Vlog focuses on maintaining a mobile-consumable contract, verified identity boundaries, regression tests, and why no backend expansion was needed for this screen.
+Mobile Vlog tập trung vào Firebase ID-token injection, typed envelope, state ownership, networking từ simulator tới local server và widget tests. Backend Vlog tập trung vào contract cho mobile, verified identity boundary, regression test và lý do không cần mở rộng Backend cho màn này.
 
-## Acceptance Criteria
+## Tiêu chí chấp nhận
 
-- An authenticated user sees Dashboard data from the local FastAPI `/v1/home` endpoint, not a hard-coded greeting.
-- Each request sends a Firebase ID token in the Bearer header.
-- The Dashboard has loading, populated, empty-plan, refresh, failure, and Retry states.
-- The UI uses the existing dark theme and Lato design tokens and remains readable on iPhone and Android phone widths.
-- No base URL, Firebase credential, token, or local `.env` value is committed.
-- Flutter feature tests, complete Flutter tests, static analysis, Backend contract tests, and Documentation build pass.
-- Mobile and Backend Vlog entries are published through the Vercel-bound Astro site and include evidence from the implementation.
+- Người dùng đã đăng nhập thấy Dashboard lấy từ FastAPI local `/v1/home`, không còn lời chào hard-code.
+- Mỗi request gửi Firebase ID token trong Bearer header.
+- Dashboard có loading, populated, empty-plan, refresh, failure và Retry state.
+- UI dùng dark theme và Lato tokens hiện có, đọc được trên iPhone và Android phone width.
+- Không commit base URL, Firebase credential, token hoặc local `.env` value.
+- Flutter feature tests, toàn bộ Flutter tests, static analysis, Backend contract tests và Documentation build đều pass.
+- Mobile và Backend Vlog được publish qua Astro site đã gắn Vercel, có evidence từ implementation.
 
-## Trade-offs
+## Trade-off
 
-- A lightweight controller is chosen over Riverpod/BLoC because this is one remote read feature and there is no shared state graph yet. The repository interface preserves a clean migration path.
-- No persistent offline cache is added. Pull-to-refresh and retry deliver the needed behavior without introducing storage invalidation policy before Workout logging exists.
-- `401` remains retryable rather than forcing sign-out. Token refresh and sign-out behavior need a cross-feature auth policy and will be designed separately.
-- The UI intentionally renders only fields provided by the current backend contract. It does not fake level, goals, challenges, or rewards to imitate a larger Figma screen.
+- Chọn controller nhẹ thay vì Riverpod/BLoC vì đây mới là một remote-read feature, chưa có shared state graph. Repository interface giữ đường nâng cấp rõ ràng.
+- Không thêm persistent offline cache. Pull-to-refresh và Retry đáp ứng nhu cầu hiện tại mà chưa cần storage invalidation policy trước khi có Workout logging.
+- `401` có thể Retry thay vì bắt buộc sign out. Token refresh và sign-out cần auth policy xuyên feature nên sẽ được thiết kế riêng.
+- UI chỉ render những field contract hiện có. Không fake level, goals, challenges hay rewards để làm giống một Figma screen lớn hơn.
