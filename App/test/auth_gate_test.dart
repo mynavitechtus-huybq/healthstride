@@ -136,7 +136,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back, Ari'), findsOneWidget);
+    expect(find.text('Good Morning 🔥'), findsOneWidget);
     expect(find.text('Hello Ari'), findsNothing);
     expect(find.text('Continue with Google'), findsNothing);
 

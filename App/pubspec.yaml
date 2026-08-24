@@ -106,6 +106,8 @@ flutter:
   assets:
     - assets/images/welcome_hero.jpg
     - assets/icons/google.svg
+    - assets/home/
+    - assets/home/icons/
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

@@ -47,7 +47,9 @@ abstract final class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: isDark
+          ? colorScheme.surface
+          : const Color(0xFFF7F6FA),
       textTheme: AppTypography.textTheme(brightness: brightness),
       dividerTheme: DividerThemeData(color: colorScheme.outline),
       cardTheme: CardThemeData(color: surfaceContainer),
