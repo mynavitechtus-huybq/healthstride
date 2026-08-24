@@ -1,14 +1,16 @@
 ---
-title: 'HealthStride: SCR WO 11 log workout'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Đặc tả màn Log buổi tập'
+description: 'Đặc tả chi tiết SCR-WO-11: thành phần, hành vi, trạng thái và lỗi.'
 ---
 # Screen Spec — SCR-WO-11 Log buổi tập
+
+Đây là màn quan trọng nhất của cả sản phẩm — mọi vòng lặp động lực đều bắt đầu từ đây — nên mình đặc tả kỹ từng trường, từng điều kiện hiện/ẩn trước khi bắt tay dựng form Flutter.
 
 > **Trạng thái**: Draft v1.0
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.1, `decision-log.md` D-001/D-003/D-005/D-007, `business-entities.md` (WorkoutLog)
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: [/library/design-system/](/library/design-system/)
 
 - **Screen ID:** `SCR-WO-11`
 - **Business name:** Log buổi tập

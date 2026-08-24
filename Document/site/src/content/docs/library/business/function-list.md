@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: function list'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Danh sách chức năng & phạm vi MVP'
+description: 'Chức năng, độ ưu tiên, độ phức tạp và phạm vi MVP dùng để estimate.'
 ---
 # Function List (Estimation Input) — HealthStride
+
+Đây là bước cuối trước khi ước lượng công sức: liệt kê từng chức năng, gắn độ ưu tiên và độ phức tạp, rồi khoanh vùng chính xác cái gì nằm trong MVP.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10
@@ -60,7 +62,7 @@ description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của Hea
 
 ---
 
-## Assumptions impacting estimate
+## Giả định ảnh hưởng tới ước lượng (Assumptions impacting estimate)
 
 1. Ứng dụng là mobile app (Flutter), phục vụ một công ty duy nhất, không có mô hình đa công ty. `[ASSUMED]`
 2. Toàn bộ dữ liệu tập luyện và sức khỏe nhập tay ở bản đầu tiên. `[DECISION]` D-005 — đã chốt, không còn là giả định.
@@ -68,7 +70,7 @@ description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của Hea
 4. Danh mục bài tập và nội dung tip/quote được khởi tạo sẵn khi phát triển, không cần màn quản trị riêng ở giai đoạn đầu. `[ASSUMED]`
 5. Bảng xếp hạng tính toán theo lịch định kỳ (snapshot), không yêu cầu cập nhật realtime tuyệt đối. `[ASSUMED]` — nếu yêu cầu realtime, FN-014 tăng độ phức tạp.
 
-## Open questions impacting estimate
+## Câu hỏi mở ảnh hưởng tới ước lượng (Open questions impacting estimate)
 
 Toàn bộ câu hỏi mức ảnh hưởng **Cao** đã được giải quyết (xem `decision-log.md`). Các câu hỏi còn lại không chặn ước lượng:
 

@@ -61,8 +61,8 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Tài liệu tham chiếu',
-          items: [{ autogenerate: { directory: 'library/reference' } }],
+          label: 'Báo cáo',
+          items: [{ autogenerate: { directory: 'library/reports' } }],
         },
       ],
     }),

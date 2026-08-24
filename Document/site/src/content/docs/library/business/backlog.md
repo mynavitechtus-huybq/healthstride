@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: backlog'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Backlog: Epic, Feature và User Story'
+description: 'Danh sách Epic, Feature, User Story kèm acceptance criteria của HealthStride.'
 ---
 # Backlog — Epic / Feature / User Story — HealthStride
+
+Khi cần chia việc thành từng phần nhỏ để lập sprint hoặc giao việc, mình quay lại tài liệu này. Nó phá nghiệp vụ đã hiểu ở các tài liệu trước thành Epic, Feature và User Story có acceptance criteria rõ ràng.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10

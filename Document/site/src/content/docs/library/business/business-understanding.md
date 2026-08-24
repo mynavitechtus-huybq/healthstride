@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: business understanding'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Hiểu bài toán nghiệp vụ (Business Understanding)'
+description: 'Mục tiêu kinh doanh, actor, business rules và phạm vi của HealthStride.'
 ---
-# Business Understanding — HealthStride
+# Hiểu bài toán nghiệp vụ — HealthStride (Business Understanding)
+
+Đây là tài liệu đầu tiên mình đọc khi mới nhận dự án — lúc chưa biết gì về nghiệp vụ HealthStride cả. Mình dùng nó để hiểu ai dùng app, vì sao họ dùng, và những quy tắc nào đã chốt trước khi động tay vào code.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10
@@ -15,13 +17,13 @@ description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của Hea
 
 ---
 
-## 1. Business overview
+## 1. Tổng quan nghiệp vụ (Business overview)
 
 HealthStride là một ứng dụng di động chăm sóc sức khỏe và thể chất dành cho **nhân viên nội bộ của một công ty** (corporate wellness app). Ứng dụng giúp nhân viên ghi nhận hoạt động tập luyện hàng ngày, tạo động lực duy trì thói quen tập luyện thông qua cơ chế trò chơi hóa (điểm số, huy hiệu, cấp độ, thử thách), kết nối cộng đồng nội bộ (bảng xếp hạng, bạn bè, nhóm tập, bảng tin hoạt động), và khuyến khích tham gia bằng cách cho phép đổi điểm tích lũy lấy phần thưởng thực tế. Song song đó, ứng dụng còn theo dõi các chỉ số sức khỏe cơ bản như dinh dưỡng, nước uống và giấc ngủ.
 
 Người dùng chính là **toàn thể nhân viên công ty**. Bên hưởng lợi thứ hai là **bộ phận HR/quản trị**, đơn vị dùng ứng dụng để theo dõi mức độ tham gia phong trào rèn luyện sức khỏe của nhân viên, quản lý danh mục phần thưởng, và công bố kết quả thi đua hàng tháng. Đây là một dự án **hoàn toàn mới**, chưa có hệ thống tiền nhiệm nội bộ nào tương tự `[ASSUMED]`.
 
-## 2. Business goals & success criteria
+## 2. Mục tiêu kinh doanh & tiêu chí thành công (Business goals & success criteria)
 
 | Mục tiêu | Tiêu chí thành công (đề xuất) | Mức tin cậy |
 |---|---|---|
@@ -30,7 +32,7 @@ Người dùng chính là **toàn thể nhân viên công ty**. Bên hưởng l�
 | Duy trì động lực dài hạn qua phần thưởng | Tỷ lệ nhân viên hoạt động liên tục (streak) trên 30 ngày | `[NEEDS-CONFIRMATION]` |
 | Cải thiện nhận thức sức khỏe toàn diện | Số lượt log dinh dưỡng/nước/giấc ngủ mỗi tuần | `[NEEDS-CONFIRMATION]` |
 
-## 3. Stakeholders & roles (business)
+## 3. Stakeholder & vai trò nghiệp vụ (Stakeholders & roles)
 
 | Vai trò | Mô tả | Ghi chú |
 |---|---|---|
@@ -38,11 +40,11 @@ Người dùng chính là **toàn thể nhân viên công ty**. Bên hưởng l�
 | Quản trị viên (HR/Admin) | Cấu hình danh mục phần thưởng, duyệt yêu cầu đổi thưởng, theo dõi bảng xếp hạng toàn công ty, công bố Top 1 hàng tháng | `[NEEDS-CONFIRMATION]` — chưa rõ admin có cấu hình được luật điểm/badge hay luật này cố định do đội phát triển set cứng |
 | Hệ thống (Scheduler/Notification) | Tác nhân tự động: reset thử thách tuần, gửi nhắc uống nước, tính điểm, xét badge | Không phải actor người dùng nhưng cần mô tả trong luồng |
 
-## 4. As-Is process (high-level)
+## 4. Quy trình hiện tại — As-Is (mức tổng quan)
 
 Hiện tại công ty chưa có công cụ tập trung để nhân viên ghi nhận hoạt động thể thao hay nhận động lực từ tổ chức. Việc tập luyện diễn ra rời rạc, không có ghi nhận, không có kênh chia sẻ nội bộ, và không có cơ chế khen thưởng gắn với hoạt động thể chất. `[ASSUMED]` — vì đây là dự án khởi tạo mới, chưa xác nhận công ty có dùng công cụ nào khác (Excel, app bên thứ ba) trước đó.
 
-## 5. To-Be process (high-level)
+## 5. Quy trình mong muốn — To-Be (mức tổng quan)
 
 1. Nhân viên đăng nhập vào HealthStride bằng tài khoản công ty.
 2. Nhân viên log buổi tập (loại hình, thời lượng, bài tập cụ thể) — hệ thống tự tính điểm theo quy tắc đã định.
@@ -52,7 +54,7 @@ Hiện tại công ty chưa có công cụ tập trung để nhân viên ghi nh�
 6. Nhân viên dùng điểm tích lũy đổi phần thưởng trong cửa hàng quà tặng nội bộ.
 7. Song song, nhân viên có thể log lượng calories tiêu thụ, số cốc nước uống, giờ ngủ; hệ thống nhắc uống nước định kỳ trong ngày.
 
-## 6. Business rules (group theo chủ đề)
+## 6. Quy tắc nghiệp vụ (nhóm theo chủ đề)
 
 ### 6.1 Quy tắc tính điểm (Points system) `[DECISION]` D-001, D-007
 
@@ -80,7 +82,7 @@ Khi vượt trần, phần điểm vượt không được cộng và hệ thố
 
 **Hai loại điểm (D-003):** hệ thống theo dõi riêng biệt điểm tích lũy trọn đời (dùng cho cấp độ và bảng xếp hạng, chỉ tăng) và điểm khả dụng (dùng để đổi thưởng, giảm khi đổi quà). Chi tiết xem §6.8 và `decision-log.md` D-003.
 
-### 6.2 Achievements & Badges
+### 6.2 Thành tích & Huy hiệu (Achievements & Badges)
 
 | Badge | Điều kiện đạt |
 |---|---|
@@ -113,7 +115,7 @@ Vì cấp độ tính trên điểm tích lũy trọn đời, nhân viên **khô
 
 **Chưa xác nhận:** "trạng thái đặc biệt" mở khóa khi lên cấp cụ thể là gì (danh hiệu hiển thị cạnh tên, khung ảnh đại diện, hay quyền lợi thực tế). `[NEEDS-CONFIRMATION]`
 
-### 6.4 Weekly Challenges
+### 6.4 Thử thách tuần (Weekly Challenges)
 
 | Challenge | Điều kiện |
 |---|---|
@@ -125,7 +127,7 @@ Vì cấp độ tính trên điểm tích lũy trọn đời, nhân viên **khô
 
 **Chưa xác nhận:** thời điểm reset thử thách tuần (theo tuần dương lịch, bắt đầu thứ Hai hay Chủ Nhật) và phần thưởng cụ thể khi hoàn thành mỗi thử thách (điểm bonus hay badge riêng). `[NEEDS-CONFIRMATION]`
 
-### 6.5 Leaderboard
+### 6.5 Bảng xếp hạng (Leaderboard)
 
 - Bảng xếp hạng Top 10 theo tổng điểm (tuần/tháng).
 - Bảng xếp hạng Top 10 theo streak dài nhất.
@@ -135,14 +137,14 @@ Vì cấp độ tính trên điểm tích lũy trọn đời, nhân viên **khô
 
 - **Chưa xác nhận:** có xếp hạng theo phòng ban hoặc nhóm nhỏ hơn toàn công ty không. `[NEEDS-CONFIRMATION]`
 
-### 6.6 Friend & Gym Team
+### 6.6 Bạn bè & Gym Team (Friend & Gym Team)
 
 - Nhân viên có thể kết bạn và xem hoạt động tập luyện của bạn bè.
 - "Cheer" — gửi lời động viên sau mỗi buổi tập của người khác.
 - Tạo "Gym Team" gồm 3–5 người, các nhóm cạnh tranh với nhau.
 - **Chưa xác nhận:** cách tính điểm/thứ hạng của một Gym Team (tổng điểm thành viên hay trung bình), ai được quyền tạo/giải tán team, giới hạn số team một nhân viên có thể tham gia. `[NEEDS-CONFIRMATION]`
 
-### 6.7 Activity Feed
+### 6.7 Bảng tin hoạt động (Activity Feed)
 
 - Bảng tin hiển thị hoạt động dạng: "Minh vừa tập Legs 60 phút", "Lan đạt Badge Streaker 🔥".
 - Hỗ trợ comment và reaction.
@@ -152,7 +154,7 @@ Vì cấp độ tính trên điểm tích lũy trọn đời, nhân viên **khô
 
 - **Chưa xác nhận:** nguồn nội dung tips và quote — do bộ phận nhân sự biên soạn sẵn hay lấy từ nguồn ngoài. `[NEEDS-CONFIRMATION]`
 
-### 6.8 Reward System
+### 6.8 Hệ thống phần thưởng (Reward System)
 
 | Mốc điểm | Phần thưởng |
 |---|---|
@@ -175,7 +177,7 @@ Nhờ tách biệt như vậy, nhân viên đổi quà không bị tụt hạng 
 
 **Chưa xác nhận:** ngân sách và giới hạn số lượng quà mỗi mốc; cách xác định Top 1 tháng khi có nhiều người đồng điểm. `[NEEDS-CONFIRMATION]`
 
-### 6.9 Nutrition & Health Tracking
+### 6.9 Dinh dưỡng & Theo dõi sức khỏe (Nutrition & Health Tracking)
 
 - Theo dõi lượng calories tiêu thụ.
 - Log nước uống, mục tiêu 8 cốc/ngày.
@@ -190,15 +192,15 @@ Các chức năng còn lại của nhóm sức khỏe (log calories, log giấc 
 
 **Chưa xác nhận:** cách nhập calories cụ thể (nhập tổng số tự do hay chọn từ danh mục món ăn có sẵn); khung giờ và tần suất nhắc uống nước cụ thể. `[NEEDS-CONFIRMATION]` Q-011b
 
-## 7. Business scenarios
+## 7. Kịch bản nghiệp vụ (Business scenarios)
 
-### 7.1 Happy paths
+### 7.1 Luồng thành công (Happy paths)
 
 - Nhân viên mở app, log một buổi tập cardio 30 phút → nhận 100 điểm → đây là buổi tập đầu tiên nên nhận thêm badge "Starter" → hoạt động xuất hiện trên bảng tin, đồng nghiệp cheer.
 - Nhân viên hoàn thành mục tiêu tuần (4 lần/tuần) → nhận điểm bonus → cấp độ tăng lên → bảng xếp hạng tuần cập nhật vị trí mới.
 - Nhân viên tích lũy đủ 500 điểm → vào cửa hàng quà tặng → đổi voucher massage → trạng thái yêu cầu đổi quà chuyển sang chờ xử lý.
 
-### 7.2 Edge cases / exceptions
+### 7.2 Trường hợp biên / ngoại lệ (Edge cases / exceptions)
 
 - Nhân viên log thời lượng bất thường (ví dụ 500 phút cardio) — đã được xử lý bằng trần điểm 300/buổi và 500/ngày theo D-007; phần vượt trần không được cộng điểm.
 - Nhân viên log nhiều buổi tập rất ngắn để gom điểm — đã được xử lý bằng ngưỡng tối thiểu 10 phút mỗi buổi.
@@ -264,7 +266,7 @@ Các chức năng còn lại của nhóm sức khỏe (log calories, log giấc 
 | Bản đồ chi tiết lộ trình chạy bộ (route map) | Quãng đường nhập tay, không cần định vị | Product Owner `[DECISION]` D-005 | 2026-08-10 | Có — gắn với giai đoạn tích hợp thiết bị đeo |
 | Chuyển dữ liệu từ hệ thống cũ, đào tạo người dùng, tài liệu hướng dẫn sử dụng | Dự án mới, chưa có hệ thống cũ | `[ASSUMED]` | — | Không áp dụng |
 
-## 12. Key concepts & terminology (glossary)
+## 12. Khái niệm chính & thuật ngữ (glossary)
 
 | Thuật ngữ | Giải thích |
 |---|---|
@@ -278,7 +280,7 @@ Các chức năng còn lại của nhóm sức khỏe (log calories, log giấc 
 | Leaderboard | Bảng xếp hạng điểm/streak |
 | Reward Redemption | Việc dùng điểm tích lũy đổi lấy phần thưởng |
 
-## 13. Assumptions / constraints
+## 13. Giả định / Ràng buộc (Assumptions / constraints)
 
 - Công ty có danh sách nhân viên sẵn có; HR nạp danh sách này vào ứng dụng để kiểm soát ai được phép đăng ký. `[DECISION]` D-004
 - HealthStride phục vụ một công ty duy nhất (single-tenant), không có mô hình nhiều công ty dùng chung. `[ASSUMED]`
@@ -286,7 +288,7 @@ Các chức năng còn lại của nhóm sức khỏe (log calories, log giấc 
 - Ngân sách và số lượng phần thưởng do HR quản lý; ứng dụng chỉ ghi nhận và theo dõi trạng thái yêu cầu đổi thưởng. `[DECISION]` D-006
 - Khu vực quản trị nằm trong cùng ứng dụng di động, không phải một cổng web riêng. `[ASSUMED]`
 
-## 14. Open questions
+## 14. Câu hỏi còn mở (Open questions)
 
 ### Đã chốt (xem `decision-log.md`)
 
@@ -316,11 +318,11 @@ Các chức năng còn lại của nhóm sức khỏe (log calories, log giấc 
 | Q-015 | Điều kiện chính xác của badge "Consistent" ("không miss 1 tuần") là gì? | Logic xét badge | Scope |
 | Q-016 | Cách nhập calories: nhập tổng số tự do hay chọn từ danh mục món ăn có sẵn? | Khối lượng công việc của FN-028 | Scope, UX |
 
-## 15. Q&A log (link)
+## 15. Nhật ký Hỏi–Đáp (Q&A log, link)
 
 Đợt hỏi đáp đầu tiên (6 câu hỏi ưu tiên) đã hoàn tất ngày 2026-08-10 — kết quả ghi tại `decision-log.md`.
 
-## 16. Decision log (link)
+## 16. Nhật ký quyết định (Decision log, link)
 
 Xem `decision-log.md` — 7 quyết định D-001 đến D-007 đã được chốt ngày 2026-08-10.
 

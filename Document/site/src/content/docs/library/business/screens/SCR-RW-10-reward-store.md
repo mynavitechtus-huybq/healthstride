@@ -1,14 +1,16 @@
 ---
-title: 'HealthStride: SCR RW 10 reward store'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Đặc tả màn Cửa hàng phần thưởng'
+description: 'Đặc tả chi tiết SCR-RW-10: thành phần, hành vi, trạng thái và lỗi.'
 ---
 # Screen Spec — SCR-RW-10 Cửa hàng phần thưởng
+
+Đây là màn mình phải cẩn thận nhất về mặt câu chữ, vì điểm tích lũy trọn đời và điểm khả dụng rất dễ bị nhầm lẫn nếu UI không rõ ràng. Đặc tả dưới đây nêu chi tiết từng nhãn, từng trạng thái để tránh đúng cái bẫy đó.
 
 > **Trạng thái**: Draft v1.0
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.8, `decision-log.md` D-003/D-006, `business-entities.md` (RewardCatalogItem, RewardRedemption)
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: [/library/design-system/](/library/design-system/)
 
 - **Screen ID:** `SCR-RW-10`
 - **Business name:** Cửa hàng phần thưởng

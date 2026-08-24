@@ -4,7 +4,7 @@
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.5, `decision-log.md` D-003, `screen-flow.md`
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: `Document/HealthStride/design-system.md`
 
 - **Screen ID:** `SCR-SC-10`
 - **Business name:** Bảng xếp hạng

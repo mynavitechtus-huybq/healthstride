@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: dashboard home design'
-description: 'Nhật ký và tài liệu tham chiếu của dự án HealthStride.'
+title: 'Đặc tả triển khai Dashboard/Home'
+description: 'Kế hoạch kỹ thuật đưa dữ liệu thật từ API vào màn Dashboard/Home.'
 ---
 # Đặc tả triển khai Dashboard/Home HealthStride
+
+Đây là bản kế hoạch mình viết trước khi đụng vào Home thật — lúc đó mình vẫn còn đang quen dần với việc nối một màn Flutter tĩnh vào dữ liệu API thật. Ghi rõ phạm vi và trade-off ra đây để không bị cuốn theo việc mở rộng ngoài dự kiến.
 
 **Trạng thái:** Đã duyệt, sẵn sàng lập kế hoạch
 
@@ -85,7 +87,7 @@ UI chỉ dùng `ApiFailure.code` ổn định cho control flow và test. Nội d
 
 Endpoint đã được implement và test. Slice này chạy Home API test hiện có như contract regression check. Nếu mobile decoder phát hiện contract mơ hồ, thêm backend contract test nhỏ nhất để chốt response shape; không refactor Backend ngoài phạm vi.
 
-### Documentation site
+### Trang tài liệu
 
 Chạy `pnpm build` trong `Document/site`. Các trang Vlog phải có route riêng dưới `daily/mobile` và `daily/backend`, đồng thời được đưa vào index tương ứng.
 

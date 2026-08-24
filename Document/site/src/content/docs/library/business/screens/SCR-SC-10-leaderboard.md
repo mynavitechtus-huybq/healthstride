@@ -1,14 +1,16 @@
 ---
-title: 'HealthStride: SCR SC 10 leaderboard'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Đặc tả màn Bảng xếp hạng'
+description: 'Đặc tả chi tiết SCR-SC-10: thành phần, hành vi, trạng thái và lỗi.'
 ---
 # Screen Spec — SCR-SC-10 Bảng xếp hạng
+
+Màn này khó hơn mình tưởng lúc mới đọc yêu cầu — vì có tận ba mức hiển thị dữ liệu cá nhân cần xử lý đúng. Ghi rõ từng trường hợp ra đây để không bỏ sót khi implement.
 
 > **Trạng thái**: Draft v1.0
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.5, `decision-log.md` D-003, `screen-flow.md`
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: [/library/design-system/](/library/design-system/)
 
 - **Screen ID:** `SCR-SC-10`
 - **Business name:** Bảng xếp hạng

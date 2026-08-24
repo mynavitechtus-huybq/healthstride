@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: business entities'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Thực thể nghiệp vụ (Business Entities)'
+description: 'Từ điển thực thể, trường dữ liệu và ràng buộc dùng khi thiết kế database và API.'
 ---
-# Business Entities — HealthStride
+# Thực thể nghiệp vụ — HealthStride (Business Entities)
+
+Đây là tài liệu mình mở ra ngay trước khi thiết kế schema database hoặc viết contract API — vì lúc đó mình cần biết chính xác mỗi thực thể có những trường gì và ràng buộc ra sao, thay vì đoán theo cảm tính.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10
@@ -13,7 +15,7 @@ description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của Hea
 
 ---
 
-## 1. Danh sách thực thể (Entity list)
+## 1. Danh sách thực thể
 
 | Entity | Ý nghĩa nghiệp vụ | Owner nghiệp vụ | Ghi chú |
 |---|---|---|---|

@@ -4,7 +4,7 @@
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.1, `decision-log.md` D-001/D-003/D-005/D-007, `business-entities.md` (WorkoutLog)
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: `Document/HealthStride/design-system.md`
 
 - **Screen ID:** `SCR-WO-11`
 - **Business name:** Log buổi tập

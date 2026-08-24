@@ -20,7 +20,7 @@
 | [backlog.md](backlog.md) | 5 Epic → 14 Feature → 26 User Story kèm acceptance criteria | Khi lập sprint hoặc giao việc cho đội phát triển |
 | [function-list.md](function-list.md) | 35 chức năng kèm độ ưu tiên, độ phức tạp, traceability và **phạm vi MVP** | Khi estimate công sức và chốt phạm vi phát hành |
 | [screens/](screens/) | Screen spec chi tiết cho 4 màn ưu tiên cao — thành phần, behavior, trạng thái, lỗi | Khi implement hoặc viết test case cho từng màn |
-| [../DESIGN-SYSTEM.md](../DESIGN-SYSTEM.md) | Design system Flutter: màu, chữ, spacing, layout, motion, component gamification | Khi dựng giao diện |
+| [design-system.md](design-system.md) | Design system Flutter: màu, chữ, spacing, layout, motion, component gamification | Khi dựng giao diện |
 | [plans/2026-08-24-data-api.md](plans/2026-08-24-data-api.md) | Kế hoạch và giới hạn thật của Data, Database, Redis và API trong tháng 8 | Khi làm feature backend tiếp theo |
 
 ### Screen spec đã viết
@@ -114,6 +114,6 @@ Có thể chốt muộn hơn:
 
 1. **Ước lượng công sức cho 17 chức năng MVP** — nay đã đủ dữ kiện để cho con số đáng tin.
 2. **Viết screen spec cho các màn MVP còn lại** — SCR-AUTH-10 Đăng nhập, SCR-RW-11 Xác nhận đổi quà, SCR-GM-10 Huy hiệu, SCR-SC-20 Activity Feed, SCR-ADM-12 Duyệt đổi thưởng.
-3. **Bổ sung `app_spacing.dart` và `app_motion.dart`** — hai module token còn thiếu theo hợp đồng trong `DESIGN-SYSTEM.md`.
+3. **Bổ sung `app_spacing.dart` và `app_motion.dart`** — hai module token còn thiếu theo hợp đồng trong `design-system.md`.
 4. **Rà soát lại ước lượng sau D-008 và D-009** — hai quyết định này đưa MVP từ 17 lên 23 chức năng và làm tăng độ phức tạp của bảng xếp hạng lẫn bảng tin.
 5. **Chốt Q-009 và Q-010 trước khi lập kế hoạch giai đoạn 2.**

@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: screen flow'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Sơ đồ màn hình (Screen Flow)'
+description: 'Sitemap, Screen ID và luồng điều hướng giữa các màn hình.'
 ---
 # Screen Flow / Sitemap — HealthStride
+
+Trước khi mở Figma, mình cần một bức tranh tổng thể xem app có bao nhiêu màn và chúng nối với nhau ra sao — tài liệu này là bản đồ đó, để mình không lạc lối giữa 29 màn hình.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10

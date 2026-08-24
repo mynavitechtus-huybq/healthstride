@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: usecase overview'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Tổng quan Use Case'
+description: 'Danh sách use case theo module, actor và độ ưu tiên.'
 ---
-# Usecase Overview — HealthStride
+# Tổng quan Use Case — HealthStride
+
+Sau khi đọc xong Business Understanding, đây là bước mình đi tiếp để trả lời "vậy hệ thống thực sự làm được những gì". Mỗi use case dưới đây ánh xạ tới một hành động cụ thể mà một actor có thể thực hiện.
 
 > **Trạng thái**: Draft
 > **Cập nhật lần cuối**: 2026-08-10
@@ -12,11 +14,11 @@ description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của Hea
 
 ---
 
-## 1. System overview
+## 1. Tổng quan hệ thống
 
 HealthStride phục vụ hai nhóm actor chính: **nhân viên** (người dùng trực tiếp mọi tính năng tập luyện, gamification, xã hội, phần thưởng, sức khỏe) và **quản trị viên HR/Admin** (quản lý danh mục phần thưởng, theo dõi tổng thể mức độ tham gia). Use case được nhóm theo 6 module tương ứng với các nhóm tính năng đã mô tả trong Business Understanding: Workout Tracking, Gamification, Social/Community, Reward, Health Tracking, và Admin.
 
-## 2. Actors
+## 2. Actor (tác nhân)
 
 | Actor | Mô tả |
 |---|---|
@@ -24,7 +26,7 @@ HealthStride phục vụ hai nhóm actor chính: **nhân viên** (người dùng
 | Quản trị viên (Admin/HR) | Quản lý phần thưởng, xem báo cáo tổng hợp, công bố Top 1 tháng |
 | Hệ thống (Scheduler) | Actor kỹ thuật — tính điểm, xét badge, reset thử thách/leaderboard theo lịch, gửi nhắc nhở |
 
-## 3. Use case summary table
+## 3. Bảng tổng hợp Use Case
 
 ### Module Workout Tracking (WO)
 
@@ -83,7 +85,7 @@ HealthStride phục vụ hai nhóm actor chính: **nhân viên** (người dùng
 | UC-AD-02 | Nạp danh sách nhân viên hợp lệ | Admin/HR | Kiểm soát ai được phép sử dụng ứng dụng | Có quyền admin | Danh sách nhân viên cập nhật, tài khoản nghỉ việc bị vô hiệu hóa | Must — `[DECISION]` D-004 |
 | UC-AD-03 | Cấu hình quy tắc điểm/badge/level | Admin/HR | Điều chỉnh cơ chế gamification theo thời gian | Có quyền admin | Quy tắc mới áp dụng cho các hoạt động tiếp theo | Ngoài phạm vi MVP — công thức D-001/D-002 cấu hình ở tầng hệ thống |
 
-## 4. Use case diagram (Mermaid)
+## 4. Sơ đồ Use Case (Mermaid)
 
 ```mermaid
 flowchart LR
@@ -114,7 +116,7 @@ flowchart LR
   Scheduler --> UC19[Gửi nhắc uống nước]
 ```
 
-## 5. Usecase ↔ Screen mapping (draft)
+## 5. Đối chiếu Use Case ↔ Màn hình (draft)
 
 Xem chi tiết đầy đủ tại `screen-flow.md`. Tóm tắt nhanh:
 
@@ -127,6 +129,6 @@ Xem chi tiết đầy đủ tại `screen-flow.md`. Tóm tắt nhanh:
 | UC-RW-02 Đổi phần thưởng | SCR-RW-10, SCR-RW-11 |
 | UC-HE-02 Log nước uống | SCR-HE-11 |
 
-## 6. Open questions / conflicts
+## 6. Câu hỏi mở / Mâu thuẫn (Open questions / conflicts)
 
 Không phát sinh conflict mới ở tầng use case. Các câu hỏi ảnh hưởng trực tiếp đến phạm vi use case đã được ghi trong `business-understanding.md` §14 (đặc biệt Q-001 đến Q-005, Q-009, Q-012 ảnh hưởng đến độ chính xác của các use case Reward và Social).

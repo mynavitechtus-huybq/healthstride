@@ -1,8 +1,10 @@
 ---
-title: 'HealthStride: decision log'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Nhật ký quyết định (Decision Log)'
+description: 'Các quyết định đã chốt chính thức, lý do và ảnh hưởng tới phạm vi.'
 ---
-# Decision Log — HealthStride
+# Nhật ký quyết định — HealthStride (Decision Log)
+
+Đây là nơi mình tra lại mỗi khi tự hỏi "sao hệ thống lại làm thế này". Thay vì hỏi lại từ đầu, mình chỉ cần lật đúng quyết định đã chốt và lý do đứng sau nó.
 
 > **Cập nhật lần cuối**: 2026-08-10
 > **Mục đích**: Ghi lại các quyết định đã chốt chính thức, lý do, và ảnh hưởng tới tài liệu/phạm vi.
