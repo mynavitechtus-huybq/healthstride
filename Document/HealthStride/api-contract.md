@@ -1,4 +1,4 @@
-# HealthStride API Contract
+# Hợp đồng API HealthStride
 
 ## Envelope
 
@@ -118,3 +118,16 @@ The home payload is assembled only from the August `users` and `workout_catalog`
 ## Generated API Reference
 
 OpenAPI documents structured `200` success envelopes and `401` error envelopes for both protected endpoints. Swagger UI is the generated reference for the `profile`, Home, and authentication-envelope schemas. Routing errors also use the standard error envelope.
+
+## Giới hạn request và cache
+
+- Request GET theo user: tối đa 100 request/phút.
+- Request POST theo user: tối đa 10 request/phút.
+- Request limit dùng Redis sliding window và một Lua script nguyên tử để tránh race condition.
+- Leaderboard tuần dùng cache-aside với TTL 60 giây.
+- Khi ghi workout thành công, cache leaderboard của tuần đó bị xóa.
+- Khi nhiều request cùng gặp cache miss, một request giữ lock ngắn hạn; lock có token và chỉ chủ lock mới được xóa.
+
+## Provider đăng nhập
+
+Trong scope tháng 8, Mobile dùng Google Sign-In và Backend kiểm tra Firebase ID token. Facebook và LINE được giữ trong backlog cho một slice riêng vì mỗi provider cần client ID, redirect URI, secret và test callback riêng. Secret không được đưa vào source code hoặc tài liệu public.

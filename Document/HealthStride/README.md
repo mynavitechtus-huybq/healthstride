@@ -2,8 +2,8 @@
 
 Ứng dụng di động chăm sóc sức khỏe nội bộ dành cho nhân viên: theo dõi tập luyện, trò chơi hóa để tạo động lực, kết nối cộng đồng, và đổi điểm lấy phần thưởng.
 
-> **Trạng thái bộ tài liệu**: Draft v1.1 — 7 quyết định cốt lõi đã chốt, phạm vi MVP đã xác định
-> **Ngày tạo**: 2026-08-10 · **Cập nhật**: 2026-08-10
+> **Trạng thái bộ tài liệu**: Draft v1.2 — có thêm nhật ký Data/API và evidence chạy local
+> **Ngày tạo**: 2026-08-10 · **Cập nhật**: 2026-08-24
 > **Quy trình áp dụng**: ai-framework — chain `context-extraction` → `foundation-design` → `agile-breakdown`
 
 ---
@@ -21,6 +21,7 @@
 | [function-list.md](function-list.md) | 35 chức năng kèm độ ưu tiên, độ phức tạp, traceability và **phạm vi MVP** | Khi estimate công sức và chốt phạm vi phát hành |
 | [screens/](screens/) | Screen spec chi tiết cho 4 màn ưu tiên cao — thành phần, behavior, trạng thái, lỗi | Khi implement hoặc viết test case cho từng màn |
 | [../DESIGN-SYSTEM.md](../DESIGN-SYSTEM.md) | Design system Flutter: màu, chữ, spacing, layout, motion, component gamification | Khi dựng giao diện |
+| [plans/2026-08-24-data-api.md](plans/2026-08-24-data-api.md) | Kế hoạch và giới hạn thật của Data, Database, Redis và API trong tháng 8 | Khi làm feature backend tiếp theo |
 
 ### Screen spec đã viết
 
@@ -39,6 +40,8 @@
 2. `usecase-overview.md` — nắm phạm vi chức năng.
 3. `screen-flow.md` — hình dung sản phẩm sẽ trông như thế nào.
 4. `backlog.md` hoặc `function-list.md` — tùy mục đích lập kế hoạch hay ước lượng.
+
+Các trang nhật ký được viết bằng tiếng Việt, theo cách kể của một người đang học: hôm nay làm gì, làm thế nào, vướng gì, tháo gỡ ra sao và học được gì. Những từ kỹ thuật như `PostgreSQL`, `Redis`, `OpenAPI` và `EXPLAIN ANALYZE` được giữ nguyên để có thể tra cứu dễ hơn.
 
 ---
 
