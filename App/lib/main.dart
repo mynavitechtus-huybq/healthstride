@@ -11,6 +11,8 @@ import 'features/home/data/api_home_repository.dart';
 import 'features/home/domain/home_repository.dart';
 import 'features/home/presentation/home_controller.dart';
 import 'features/home/presentation/home_screen.dart';
+import 'features/leaderboard/data/api_leaderboard_repository.dart';
+import 'features/leaderboard/domain/leaderboard_repository.dart';
 import 'firebase_bootstrap.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
@@ -26,6 +28,7 @@ class MyApp extends StatefulWidget {
   factory MyApp({
     AuthRepository? authRepository,
     HomeRepository? homeRepository,
+    LeaderboardRepository? leaderboardRepository,
     ThemeController? themeController,
     Key? key,
   }) {
@@ -36,6 +39,11 @@ class MyApp extends StatefulWidget {
     return MyApp._(
       authRepository: resolvedAuthRepository,
       homeRepository: resolvedHomeRepository,
+      leaderboardRepository:
+          leaderboardRepository ??
+          (homeRepository == null
+              ? _buildLeaderboardRepository(resolvedAuthRepository)
+              : null),
       themeController: themeController ?? ThemeController.inMemory(),
       key: key,
     );
@@ -44,16 +52,31 @@ class MyApp extends StatefulWidget {
   const MyApp._({
     required this._authRepository,
     required this._homeRepository,
+    required this._leaderboardRepository,
     required this._themeController,
     super.key,
   });
 
   final AuthRepository _authRepository;
   final HomeRepository _homeRepository;
+  final LeaderboardRepository? _leaderboardRepository;
   final ThemeController _themeController;
 
   static HomeRepository _buildHomeRepository(AuthRepository authRepository) {
     return ApiHomeRepository(
+      ApiClient(
+        tokenProvider: authRepository.getIdToken,
+        getRequest: createHttpGetRequest(
+          baseUrl: AppEnvironment.instance.apiBaseUrl,
+        ),
+      ),
+    );
+  }
+
+  static LeaderboardRepository _buildLeaderboardRepository(
+    AuthRepository authRepository,
+  ) {
+    return ApiLeaderboardRepository(
       ApiClient(
         tokenProvider: authRepository.getIdToken,
         getRequest: createHttpGetRequest(
@@ -98,6 +121,7 @@ class _MyAppState extends State<MyApp> {
         signedInBuilder: (_, user) => _AuthenticatedHomeScreen(
           key: ValueKey(user.id),
           repository: widget._homeRepository,
+          leaderboardRepository: widget._leaderboardRepository,
           onSignOut: widget._authRepository.signOut,
           themeMode: widget._themeController.themeMode,
           onThemeModeChanged: widget._themeController.setThemeMode,
@@ -110,6 +134,7 @@ class _MyAppState extends State<MyApp> {
 class _AuthenticatedHomeScreen extends StatefulWidget {
   const _AuthenticatedHomeScreen({
     required this.repository,
+    this.leaderboardRepository,
     required this.onSignOut,
     required this.themeMode,
     required this.onThemeModeChanged,
@@ -117,6 +142,7 @@ class _AuthenticatedHomeScreen extends StatefulWidget {
   });
 
   final HomeRepository repository;
+  final LeaderboardRepository? leaderboardRepository;
   final Future<void> Function() onSignOut;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
@@ -154,6 +180,7 @@ class _AuthenticatedHomeScreenState extends State<_AuthenticatedHomeScreen> {
   Widget build(BuildContext context) {
     return HomeScreen(
       controller: _controller,
+      leaderboardRepository: widget.leaderboardRepository,
       onSignOut: widget.onSignOut,
       themeMode: widget.themeMode,
       onThemeModeChanged: widget.onThemeModeChanged,

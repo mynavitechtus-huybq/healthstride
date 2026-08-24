@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../domain/home_dashboard.dart';
+import '../../leaderboard/domain/leaderboard_repository.dart';
+import '../../leaderboard/presentation/leaderboard_controller.dart';
+import '../../leaderboard/presentation/leaderboard_screen.dart';
 import 'home_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.controller,
     required this.onSignOut,
+    this.leaderboardRepository,
     this.themeMode = ThemeMode.system,
     this.onThemeModeChanged,
     super.key,
@@ -17,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
   final HomeController controller;
   final Future<void> Function() onSignOut;
+  final LeaderboardRepository? leaderboardRepository;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode>? onThemeModeChanged;
 
@@ -102,6 +107,19 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: _HomeBottomNavigation(
         onTap: (index) {
           if (index == 0) return;
+          if (index == 1 && widget.leaderboardRepository != null) {
+            final controller = LeaderboardController(
+              repository: widget.leaderboardRepository!,
+            );
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => LeaderboardScreen(controller: controller),
+                  ),
+                )
+                .whenComplete(controller.dispose);
+            return;
+          }
           const labels = ['Home', 'Explore', 'Statistics', 'Profile'];
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
