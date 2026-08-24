@@ -696,7 +696,7 @@ class _HomeBottomNavigation extends StatelessWidget {
       'assets/home/icons/profile.svg',
     ];
     final labels = ['Home', 'Explore', 'Statistics', 'Profile'];
-    const activeWidths = [105.0, 112.0, 124.0, 105.0];
+    const activeWidths = [96.0, 104.0, 117.0, 96.0];
     final activeAlignment = Alignment(
       -1 + (2 * selectedIndex / (labels.length - 1)),
       0,
@@ -714,21 +714,6 @@ class _HomeBottomNavigation extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            AnimatedAlign(
-              alignment: activeAlignment,
-              duration: const Duration(milliseconds: 320),
-              curve: Curves.easeInOutCubic,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 260),
-                curve: Curves.easeInOutCubic,
-                width: activeWidths[selectedIndex],
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.accent,
-                  borderRadius: BorderRadius.circular(43),
-                ),
-              ),
-            ),
             Row(
               children: [
                 for (var index = 0; index < labels.length; index++)
@@ -739,39 +724,8 @@ class _HomeBottomNavigation extends StatelessWidget {
                         onTap: () => onTap(index),
                         borderRadius: BorderRadius.circular(43),
                         child: index == selectedIndex
-                            ? Center(
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SvgPicture.asset(
-                                        iconPaths[index],
-                                        width: 28,
-                                        height: 28,
-                                        colorFilter: const ColorFilter.mode(
-                                          AppColors.background,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        labels[index],
-                                        style: const TextStyle(
-                                          color: AppColors.background,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
+                            ? const SizedBox(height: 44)
+                            : Center(
                                 child: SvgPicture.asset(
                                   iconPaths[index],
                                   width: 24,
@@ -786,6 +740,54 @@ class _HomeBottomNavigation extends StatelessWidget {
                     ),
                   ),
               ],
+            ),
+            AnimatedAlign(
+              alignment: activeAlignment,
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeInOutCubic,
+              child: IgnorePointer(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 260),
+                  curve: Curves.easeInOutCubic,
+                  width: activeWidths[selectedIndex],
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(43),
+                  ),
+                  child: Center(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 160),
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      child: Row(
+                        key: ValueKey(selectedIndex),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(
+                            iconPaths[selectedIndex],
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.background,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            labels[selectedIndex],
+                            style: const TextStyle(
+                              color: AppColors.background,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
