@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/config/app_environment.dart';
 import 'core/network/api_client.dart';
@@ -12,17 +13,20 @@ import 'features/home/presentation/home_controller.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'firebase_bootstrap.dart';
 import 'theme/app_theme.dart';
+import 'theme/theme_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await bootstrapFirebase();
-  runApp(MyApp());
+  final preferences = await SharedPreferences.getInstance();
+  runApp(MyApp(themeController: ThemeController.fromPreferences(preferences)));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   factory MyApp({
     AuthRepository? authRepository,
     HomeRepository? homeRepository,
+    ThemeController? themeController,
     Key? key,
   }) {
     final resolvedAuthRepository = authRepository ?? FirebaseAuthRepository();
@@ -32,6 +36,7 @@ class MyApp extends StatelessWidget {
     return MyApp._(
       authRepository: resolvedAuthRepository,
       homeRepository: resolvedHomeRepository,
+      themeController: themeController ?? ThemeController.inMemory(),
       key: key,
     );
   }
@@ -39,11 +44,13 @@ class MyApp extends StatelessWidget {
   const MyApp._({
     required this._authRepository,
     required this._homeRepository,
+    required this._themeController,
     super.key,
   });
 
   final AuthRepository _authRepository;
   final HomeRepository _homeRepository;
+  final ThemeController _themeController;
 
   static HomeRepository _buildHomeRepository(AuthRepository authRepository) {
     return ApiHomeRepository(
@@ -57,16 +64,43 @@ class MyApp extends StatelessWidget {
   }
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    widget._themeController.addListener(_handleThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    widget._themeController
+      ..removeListener(_handleThemeChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleThemeChanged() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Fitness Application',
-      theme: AppTheme.dark(),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: widget._themeController.themeMode,
       home: AuthGate(
-        repository: _authRepository,
+        repository: widget._authRepository,
+        themeMode: widget._themeController.themeMode,
+        onThemeModeChanged: widget._themeController.setThemeMode,
         signedInBuilder: (_, user) => _AuthenticatedHomeScreen(
           key: ValueKey(user.id),
-          repository: _homeRepository,
-          onSignOut: _authRepository.signOut,
+          repository: widget._homeRepository,
+          onSignOut: widget._authRepository.signOut,
+          themeMode: widget._themeController.themeMode,
+          onThemeModeChanged: widget._themeController.setThemeMode,
         ),
       ),
     );
@@ -77,11 +111,15 @@ class _AuthenticatedHomeScreen extends StatefulWidget {
   const _AuthenticatedHomeScreen({
     required this.repository,
     required this.onSignOut,
+    required this.themeMode,
+    required this.onThemeModeChanged,
     super.key,
   });
 
   final HomeRepository repository;
   final Future<void> Function() onSignOut;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
   State<_AuthenticatedHomeScreen> createState() =>
@@ -114,6 +152,11 @@ class _AuthenticatedHomeScreenState extends State<_AuthenticatedHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return HomeScreen(controller: _controller, onSignOut: widget.onSignOut);
+    return HomeScreen(
+      controller: _controller,
+      onSignOut: widget.onSignOut,
+      themeMode: widget.themeMode,
+      onThemeModeChanged: widget.onThemeModeChanged,
+    );
   }
 }

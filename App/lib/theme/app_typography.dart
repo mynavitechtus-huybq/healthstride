@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppTypography {
-  static TextTheme textTheme() {
-    final base = Typography.material2021().white.apply(fontFamily: 'Lato');
+  static TextTheme textTheme({Brightness brightness = Brightness.dark}) {
+    final base =
+        (brightness == Brightness.dark
+                ? Typography.material2021().white
+                : Typography.material2021().black)
+            .apply(fontFamily: 'Lato');
 
     return base.copyWith(
       displayLarge: base.displayLarge?.copyWith(fontWeight: FontWeight.w800),
       displayMedium: base.displayMedium?.copyWith(fontWeight: FontWeight.w800),
       displaySmall: base.displaySmall?.copyWith(fontWeight: FontWeight.w800),
       headlineLarge: base.headlineLarge?.copyWith(fontWeight: FontWeight.w700),
-      headlineMedium: base.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+      headlineMedium: base.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
       headlineSmall: base.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
       titleLarge: base.titleLarge?.copyWith(fontWeight: FontWeight.w700),
       titleMedium: base.titleMedium?.copyWith(fontWeight: FontWeight.w600),

@@ -1,4 +1,5 @@
 import 'package:fitness_application/theme/app_colors.dart';
+import 'package:fitness_application/theme/theme_mode_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/home_dashboard.dart';
@@ -8,11 +9,15 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.controller,
     required this.onSignOut,
+    this.themeMode = ThemeMode.system,
+    this.onThemeModeChanged,
     super.key,
   });
 
   final HomeController controller;
   final Future<void> Function() onSignOut;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode>? onThemeModeChanged;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -74,11 +79,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('HealthStride'),
         actions: [
+          if (widget.onThemeModeChanged != null)
+            ThemeModePickerButton(
+              themeMode: widget.themeMode,
+              onThemeModeChanged: widget.onThemeModeChanged!,
+            ),
           IconButton(
             onPressed: () {
               widget.onSignOut();
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_rounded),
             tooltip: 'Sign out',
           ),
         ],
@@ -239,7 +249,7 @@ class _MetricCard extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.neutral800,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: accentColor.withValues(alpha: 0.22)),
       ),
@@ -298,7 +308,7 @@ class _WorkoutCard extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.neutral800,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
@@ -310,7 +320,7 @@ class _WorkoutCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: AppColors.accent),
@@ -424,7 +434,7 @@ class _SectionMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.neutral800,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
@@ -480,7 +490,7 @@ class _LoadingBlock extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.neutral800,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(8),
         ),
       ),

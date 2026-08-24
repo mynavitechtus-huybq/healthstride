@@ -6,6 +6,7 @@ import 'package:fitness_application/features/auth/domain/auth_repository.dart';
 import 'package:fitness_application/features/home/domain/home_dashboard.dart';
 import 'package:fitness_application/features/home/domain/home_repository.dart';
 import 'package:fitness_application/main.dart';
+import 'package:fitness_application/theme/theme_controller.dart';
 
 class _FakeAuthRepository implements AuthRepository {
   _FakeAuthRepository(this._user);
@@ -101,6 +102,7 @@ void main() {
               ),
             ),
           ),
+          themeController: ThemeController.inMemory(themeMode: ThemeMode.dark),
         ),
       );
       await tester.pump();
@@ -108,6 +110,7 @@ void main() {
 
       expect(find.text('Welcome back, Ari'), findsOneWidget);
       expect(find.text('Hello Ari'), findsNothing);
+      expect(find.byTooltip('Change theme'), findsOneWidget);
       final context = tester.element(find.text('Welcome back, Ari'));
       expect(Theme.of(context).colorScheme.primary, const Color(0xFFBBF246));
       expect(
