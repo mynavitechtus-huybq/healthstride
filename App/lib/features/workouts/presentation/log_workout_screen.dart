@@ -110,7 +110,8 @@ class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
             const SizedBox(height: 28),
             if (state.failure != null)
               Text(
-                state.failure!.message,
+                '${state.failure!.code}: ${state.failure!.message}',
+                textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             if (state.workout != null)

@@ -13,10 +13,21 @@ class LogWorkoutController extends ValueNotifier<LogWorkoutState> {
   Future<void> submit(WorkoutDraft draft) async {
     if (value.isSubmitting) return;
     value = const LogWorkoutState(isSubmitting: true);
-    final result = await repository.logWorkout(
-      draft: draft,
-      idempotencyKey: DateTime.now().microsecondsSinceEpoch.toString(),
-    );
+    late final ApiResult<LoggedWorkout> result;
+    try {
+      result = await repository.logWorkout(
+        draft: draft,
+        idempotencyKey: DateTime.now().microsecondsSinceEpoch.toString(),
+      );
+    } catch (_) {
+      value = const LogWorkoutState(
+        failure: ApiFailure(
+          code: 'WORKOUT_SUBMIT_FAILED',
+          message: 'Could not save workout. Please try again.',
+        ),
+      );
+      return;
+    }
     value = result.data == null
         ? LogWorkoutState(failure: result.failure)
         : LogWorkoutState(workout: result.data);
