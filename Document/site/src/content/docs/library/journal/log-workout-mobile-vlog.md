@@ -1,65 +1,86 @@
 ---
 title: 'Vlog: Ghi nhận Workout trên Mobile - 24 tháng 8 năm 2026'
-description: 'Phạm vi và bài học dự kiến khi nối form Flutter với API ghi workout.'
+description: 'Nhật ký nối form Flutter với API, PostgreSQL, Redis và Leaderboard.'
 ---
 
 # Nhật ký xây dựng: Ghi nhận Workout trên Mobile
 
-## Phạm vi đã chốt
+> Đây là một ngày có nhiều lỗi thật. Tôi ghi lại để lần sau không lặp lại và để người mới học có thể theo dõi được cả phần khó, không chỉ phần đã chạy thành công.
 
-Sau Leaderboard, tôi làm form ghi workout để kiểm tra một vòng đi đầy đủ: Mobile gửi dữ liệu, Backend tính điểm, Redis xóa cache cũ và Leaderboard có thể tải dữ liệu mới.
+## Mục tiêu
 
-## Mobile
+Sau Leaderboard, tôi làm form ghi workout để kiểm tra chuỗi:
 
-### Hôm nay tôi đã làm gì?
+```text
+Mobile -> API -> PostgreSQL -> Redis invalidation -> Leaderboard
+```
 
-- Tạo form chọn loại workout, nhập số phút và nhập quãng đường nếu là cardio.
-- Thêm nút mở form từ Home.
-- Gửi `POST /v1/workouts` cùng `Idempotency-Key`.
-- Hiển thị trạng thái đang gửi, thành công và lỗi.
+## Mobile: tôi đã làm gì?
 
-### Tôi làm như thế nào?
+- Thêm nút `Log workout` ở Home.
+- Tạo form chọn loại workout, nhập duration và nhập distance cho Cardio.
+- Gọi `POST /v1/workouts` với Firebase Bearer token.
+- Gửi `Idempotency-Key`.
+- Hiển thị loading, points, calories và lỗi.
 
-Tôi thêm khả năng POST vào `ApiClient`, rồi tạo repository và controller riêng cho workout. UI chỉ phụ trách form và trạng thái; việc tính calories, points và invalidation cache vẫn do Backend xử lý.
+## Backend: tôi đã làm gì?
 
-### Tôi gặp khó khăn gì?
+Endpoint workout xác thực user, validate payload, tính points/calories, ghi Database trong transaction, xóa cache Leaderboard và giới hạn POST theo user.
 
-ApiClient ban đầu mới hỗ trợ GET. Widget test cũng cần mở dropdown trước khi chọn loại workout.
+## Tôi làm như thế nào?
 
-### Tôi tháo gỡ ra sao?
+Tôi thêm POST vào `ApiClient`, sau đó tách repository, controller và screen. Mobile không tự tính points; Backend là nơi giữ business rule.
 
-Tôi thêm POST JSON request có Bearer token và idempotency header. Test được viết theo đúng thứ tự thao tác của người dùng.
+## Khó khăn thật
 
-### Tôi học được gì?
+### Thiếu `API_BASE_URL`
 
-Validation, loading và lỗi phải được thiết kế cùng lúc với form. Repository fake giúp tôi kiểm tra UI nhanh mà không phụ thuộc môi trường Backend.
+Flutter không tự đọc `.env`, nên phải chạy bằng `--dart-define`. Với iOS Simulator, URL local là `http://127.0.0.1:8000`.
 
-## Backend
+### Enum UI khác enum API
 
-Tôi dùng endpoint `POST /v1/workouts` đang có sẵn. Backend đã có validation, rate limit theo user và invalidation cache Leaderboard.
+UI dùng chữ dễ hiểu, còn Backend dùng value kỹ thuật:
 
-## Kiểm tra
+```text
+Strength -> weight_lifting
+Flexibility -> yoga
+```
 
-- `flutter analyze`: không lỗi.
-- `flutter test`: pass.
-- Widget test kiểm tra submit cardio và chặn duration không hợp lệ.
+Không map hai giá trị này làm API trả `422`.
 
-## Lỗi phát sinh khi chạy thật
+### Backend trả 500
 
-Strength và Flexibility bị `422` vì UI gửi label kỹ thuật khác enum Backend. Backend nhận `weight_lifting` và `yoga`, nên Mobile cần map label dễ hiểu sang value API. Cardio qua được validation nhưng đang trả `500`, cần xem log Backend để sửa đúng nguyên nhân thay vì đoán.
+Sau khi ghi stack trace, tôi tìm thấy lỗi `A transaction is already begun on this Session`. `refresh(user)` sau bước xác thực đã mở transaction đọc, rồi workout lại mở transaction ghi.
 
-Leaderboard cũng đang chỉ hiện một câu lỗi chung. Tôi sẽ cho hiển thị message an toàn từ API để việc kiểm tra local dễ hiểu hơn.
+### Chạy nhầm Backend
 
-Form workout cũng cần bắt exception ngoài dự kiến để không kẹt nút Save ở trạng thái loading. Mã lỗi sẽ được hiển thị để kiểm tra local rõ ràng hơn.
+Port `8000` đã có process từ worktree cũ. Tôi phải kiểm tra process và restart Backend đúng từ source hiện tại.
 
-Với lỗi `INTERNAL_SERVER_ERROR`, Backend cần ghi stack trace ở terminal nhưng vẫn trả message an toàn cho Mobile.
+## Cách tôi tháo gỡ
 
-Traceback cho thấy `refresh()` sau bước xác thực đã mở transaction, sau đó service workout cố `begin()` thêm lần nữa. Tôi sẽ đóng transaction xác thực trước khi ghi workout.
+- Map label UI sang enum API.
+- Bổ sung POST JSON và idempotency header.
+- Bắt exception để nút Save không kẹt loading.
+- Hiển thị mã lỗi an toàn ở Mobile.
+- Log stack trace ở Backend.
+- Đóng transaction sau `refresh()` trước khi mở transaction workout.
 
-## Mục tiêu học tập
+## Kinh nghiệm tôi học được
 
-Tôi muốn hiểu rõ hơn cách một form Flutter giữ trạng thái, chờ API trả lời và không tạo dữ liệu trùng khi người dùng bấm nút nhiều lần.
+1. Luôn kiểm tra URL và port trước khi debug giao diện.
+2. Label UI và enum API cần được mapping rõ ràng.
+3. Lỗi 500 cần xem log server, không nên đoán từ Mobile.
+4. Một session Database có thể đã mở transaction dù tôi không gọi `begin()` ngay trước đó.
+5. Test fake bảo vệ UI, nhưng chỉ manual end-to-end mới phát hiện được lỗi transaction thật.
 
-## Việc chưa làm
+## Kết quả
 
-Chưa kiểm tra manual end-to-end với PostgreSQL, Redis và Firebase token thật trên iOS Simulator.
+- Lưu workout thành công trên iOS Simulator với Firebase token thật.
+- Points và calories được Backend trả về.
+- Cache Leaderboard được invalidation.
+- Backend: `33 passed`.
+- Flutter analyzer, Flutter tests và Ruff đều pass.
+
+## Việc còn lại
+
+Merge PR #13 và kiểm tra Leaderboard sau khi lưu workout để xác nhận dữ liệu mới đã được tải lại.
