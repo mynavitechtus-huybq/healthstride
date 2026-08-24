@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../domain/home_dashboard.dart';
+import '../../leaderboard/domain/leaderboard_repository.dart';
+import '../../leaderboard/presentation/leaderboard_controller.dart';
+import '../../leaderboard/presentation/leaderboard_screen.dart';
 import 'home_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.controller,
     required this.onSignOut,
+    this.leaderboardRepository,
     this.themeMode = ThemeMode.system,
     this.onThemeModeChanged,
     super.key,
@@ -17,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
   final HomeController controller;
   final Future<void> Function() onSignOut;
+  final LeaderboardRepository? leaderboardRepository;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode>? onThemeModeChanged;
 
@@ -26,11 +31,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Object? _snackBarFailureToken;
+  var _selectedTab = 0;
+  LeaderboardController? _leaderboardController;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_handleControllerChanged);
+    if (widget.leaderboardRepository != null) {
+      _leaderboardController = LeaderboardController(
+        repository: widget.leaderboardRepository!,
+      );
+    }
     widget.controller.load();
   }
 
@@ -48,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     widget.controller.removeListener(_handleControllerChanged);
+    _leaderboardController?.dispose();
     super.dispose();
   }
 
@@ -78,36 +91,40 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ValueListenableBuilder<HomeViewState>(
-          valueListenable: widget.controller,
-          builder: (context, state, child) {
-            if (state.isInitialLoading && state.dashboard == null) {
-              return const _HomeLoadingView();
-            }
+        child: _selectedTab == 1 && _leaderboardController != null
+            ? LeaderboardScreen(
+                controller: _leaderboardController!,
+                embedded: true,
+              )
+            : _selectedTab == 0
+            ? ValueListenableBuilder<HomeViewState>(
+                valueListenable: widget.controller,
+                builder: (context, state, child) {
+                  if (state.isInitialLoading && state.dashboard == null) {
+                    return const _HomeLoadingView();
+                  }
 
-            if (state.dashboard == null) {
-              return _HomeErrorView(onRetry: widget.controller.retry);
-            }
+                  if (state.dashboard == null) {
+                    return _HomeErrorView(onRetry: widget.controller.retry);
+                  }
 
-            return _HomeDashboardView(
-              state: state,
-              onRefresh: widget.controller.refresh,
-              themeMode: widget.themeMode,
-              onThemeModeChanged: widget.onThemeModeChanged,
-              onSignOut: widget.onSignOut,
-            );
-          },
-        ),
+                  return _HomeDashboardView(
+                    state: state,
+                    onRefresh: widget.controller.refresh,
+                    themeMode: widget.themeMode,
+                    onThemeModeChanged: widget.onThemeModeChanged,
+                    onSignOut: widget.onSignOut,
+                  );
+                },
+              )
+            : _ComingSoonView(label: _tabLabel(_selectedTab)),
       ),
       bottomNavigationBar: _HomeBottomNavigation(
+        selectedIndex: _selectedTab,
         onTap: (index) {
-          if (index == 0) return;
-          const labels = ['Home', 'Explore', 'Statistics', 'Profile'];
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text('${labels[index]} is coming soon.')),
-            );
+          if (index == _selectedTab) return;
+          setState(() => _selectedTab = index);
+          if (index == 1) _leaderboardController?.load();
         },
       ),
     );
@@ -662,9 +679,13 @@ class _HomeErrorView extends StatelessWidget {
 }
 
 class _HomeBottomNavigation extends StatelessWidget {
-  const _HomeBottomNavigation({required this.onTap});
+  const _HomeBottomNavigation({
+    required this.onTap,
+    required this.selectedIndex,
+  });
 
   final ValueChanged<int> onTap;
+  final int selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -675,6 +696,11 @@ class _HomeBottomNavigation extends StatelessWidget {
       'assets/home/icons/profile.svg',
     ];
     final labels = ['Home', 'Explore', 'Statistics', 'Profile'];
+    const activeWidths = [96.0, 104.0, 117.0, 96.0];
+    final activeAlignment = Alignment(
+      -1 + (2 * selectedIndex / (labels.length - 1)),
+      0,
+    );
 
     return Container(
       margin: const EdgeInsets.fromLTRB(25, 0, 25, 12),
@@ -683,54 +709,111 @@ class _HomeBottomNavigation extends StatelessWidget {
         color: AppColors.background,
         borderRadius: BorderRadius.circular(32),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (var index = 0; index < labels.length; index++)
-            Tooltip(
-              message: labels[index],
-              child: IconButton(
-                onPressed: () => onTap(index),
-                icon: index == 0
-                    ? DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          borderRadius: BorderRadius.circular(43),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SvgPicture.asset(
-                                iconPaths[index],
-                                width: 24,
-                                height: 24,
-                              ),
-                              const SizedBox(width: 4),
-                              const Text(
-                                'Home',
-                                style: TextStyle(
-                                  color: AppColors.background,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+      child: SizedBox(
+        height: 44,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              children: [
+                for (var index = 0; index < labels.length; index++)
+                  Expanded(
+                    child: Tooltip(
+                      message: labels[index],
+                      child: InkWell(
+                        onTap: () => onTap(index),
+                        borderRadius: BorderRadius.circular(43),
+                        child: index == selectedIndex
+                            ? const SizedBox(height: 44)
+                            : Center(
+                                child: SvgPicture.asset(
+                                  iconPaths[index],
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
-                            ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            AnimatedAlign(
+              alignment: activeAlignment,
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeInOutCubic,
+              child: IgnorePointer(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 260),
+                  curve: Curves.easeInOutCubic,
+                  width: activeWidths[selectedIndex],
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(43),
+                  ),
+                  child: Center(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 160),
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      child: Row(
+                        key: ValueKey(selectedIndex),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(
+                            iconPaths[selectedIndex],
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.background,
+                              BlendMode.srcIn,
+                            ),
                           ),
-                        ),
-                      )
-                    : SvgPicture.asset(iconPaths[index], width: 24, height: 24),
+                          const SizedBox(width: 6),
+                          Text(
+                            labels[selectedIndex],
+                            style: const TextStyle(
+                              color: AppColors.background,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+class _ComingSoonView extends StatelessWidget {
+  const _ComingSoonView({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        '$label is coming soon.',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+    );
+  }
+}
+
+String _tabLabel(int index) =>
+    const ['Home', 'Explore', 'Statistics', 'Profile'][index];
 
 String _greetingName(HomeProfile profile) {
   final displayName = profile.displayName.trim();
