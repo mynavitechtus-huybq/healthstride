@@ -16,7 +16,7 @@ class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
   final _formKey = GlobalKey<FormState>();
   final _durationController = TextEditingController();
   final _distanceController = TextEditingController();
-  var _type = 'strength';
+  var _type = 'weight_lifting';
 
   @override
   void initState() {
@@ -64,12 +64,12 @@ class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
               initialValue: _type,
               decoration: const InputDecoration(labelText: 'Workout type'),
               items: const [
-                DropdownMenuItem(value: 'strength', child: Text('Strength')),
-                DropdownMenuItem(value: 'cardio', child: Text('Cardio')),
                 DropdownMenuItem(
-                  value: 'flexibility',
-                  child: Text('Flexibility'),
+                  value: 'weight_lifting',
+                  child: Text('Strength'),
                 ),
+                DropdownMenuItem(value: 'cardio', child: Text('Cardio')),
+                DropdownMenuItem(value: 'yoga', child: Text('Flexibility')),
               ],
               onChanged: state.isSubmitting
                   ? null
