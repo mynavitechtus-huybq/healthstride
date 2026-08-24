@@ -32,6 +32,15 @@ Một feature Mobile tốt không chỉ có màn hình đẹp. Repository phải
 
 Chưa chạy manual end-to-end trên iOS Simulator với Firebase ID token thật. Đây là bước tiếp theo sau khi Backend local và Firebase session sẵn sàng.
 
+### Chốt UI menu sau khi kiểm tra
+
+- Icon active và inactive cùng kích thước `24px`.
+- Icon và text active được căn giữa trong cùng khối pill và padding.
+- Các label dùng cùng cỡ chữ, không phóng to riêng theo tab.
+- Khối active vẫn trượt giữa các item bằng animation.
+
+Sau chốt này, phần menu chỉ còn việc kiểm thử responsive và kiểm tra lại trên simulator. Không còn thay đổi thiết kế nào khác trong slice này.
+
 ## Backend
 
 Backend đã có sẵn endpoint leaderboard, Redis cache-aside TTL 60 giây, invalidation sau workout và lock chống cache stampede. Mobile chỉ gọi API; không tự tính lại điểm.

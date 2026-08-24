@@ -28,3 +28,12 @@ Feature Mobile cần cả UI, API decoder, trạng thái và dependency có th�
 - Leaderboard repository và widget tests: pass.
 
 Manual simulator với Firebase token thật vẫn là bước tiếp theo.
+
+## Chốt UI menu
+
+- Icon active và inactive cùng kích thước `24px`.
+- Icon và text active được căn giữa trong cùng pill và padding.
+- Các label dùng cùng cỡ chữ.
+- Khối active vẫn trượt giữa các item bằng animation.
+
+Sau chốt này chỉ còn kiểm thử responsive và simulator.
