@@ -41,6 +41,8 @@ Khi chọn Strength hoặc Flexibility, API trả `422` vì label trên form ch�
 
 Leaderboard cũng đang có thông báo chung khi request thất bại. Tôi sẽ hiển thị message an toàn từ `ApiFailure` để biết lỗi nằm ở token, URL, rate limit hay Backend.
 
+Khi submit workout, controller cũng cần bắt exception ngoài dự kiến để nút không bị kẹt ở trạng thái loading. Tôi sẽ thêm trạng thái lỗi ổn định và hiển thị mã lỗi cho việc debug local.
+
 ## Backend
 
 Backend đã có endpoint `POST /v1/workouts`, rate limit POST theo user và invalidation cache Leaderboard. Trong slice này tôi sẽ dùng contract hiện tại, chưa thay đổi business rule.

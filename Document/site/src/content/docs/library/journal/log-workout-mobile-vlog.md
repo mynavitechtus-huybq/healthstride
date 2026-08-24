@@ -50,6 +50,8 @@ Strength và Flexibility bị `422` vì UI gửi label kỹ thuật khác enum B
 
 Leaderboard cũng đang chỉ hiện một câu lỗi chung. Tôi sẽ cho hiển thị message an toàn từ API để việc kiểm tra local dễ hiểu hơn.
 
+Form workout cũng cần bắt exception ngoài dự kiến để không kẹt nút Save ở trạng thái loading. Mã lỗi sẽ được hiển thị để kiểm tra local rõ ràng hơn.
+
 ## Mục tiêu học tập
 
 Tôi muốn hiểu rõ hơn cách một form Flutter giữ trạng thái, chờ API trả lời và không tạo dữ liệu trùng khi người dùng bấm nút nhiều lần.
