@@ -708,64 +708,60 @@ class _HomeBottomNavigation extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (var index = 0; index < labels.length; index++)
-            Expanded(
-              child: Tooltip(
-                message: labels[index],
-                child: InkWell(
-                  onTap: () => onTap(index),
-                  borderRadius: BorderRadius.circular(43),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 220),
-                    curve: Curves.easeOutCubic,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: index == selectedIndex
-                          ? AppColors.accent
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(43),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SvgPicture.asset(
-                            iconPaths[index],
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              index == selectedIndex
-                                  ? AppColors.background
-                                  : Colors.white,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          AnimatedSize(
-                            duration: const Duration(milliseconds: 180),
-                            curve: Curves.easeOutCubic,
-                            child: index == selectedIndex
-                                ? Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        labels[index],
-                                        style: const TextStyle(
-                                          color: AppColors.background,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox.shrink(),
-                          ),
-                        ],
+            Tooltip(
+              message: labels[index],
+              child: InkWell(
+                onTap: () => onTap(index),
+                borderRadius: BorderRadius.circular(43),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  padding: index == selectedIndex
+                      ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
+                      : const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                  decoration: BoxDecoration(
+                    color: index == selectedIndex
+                        ? AppColors.accent
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(43),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        iconPaths[index],
+                        width: 24,
+                        height: 24,
+                        colorFilter: ColorFilter.mode(
+                          index == selectedIndex
+                              ? AppColors.background
+                              : Colors.white,
+                          BlendMode.srcIn,
+                        ),
                       ),
-                    ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOutCubic,
+                        child: index == selectedIndex
+                            ? Row(
+                                children: [
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    labels[index],
+                                    style: const TextStyle(
+                                      color: AppColors.background,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ),
               ),
