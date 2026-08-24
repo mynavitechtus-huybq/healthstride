@@ -1,0 +1,22 @@
+---
+title: 'Mobile: chuẩn bị tích hợp Data/API - 24 tháng 8 năm 2026'
+description: 'Nhật ký Mobile ghi lại tác động của Backend slice.'
+---
+
+# Nhật ký Mobile - 24 tháng 8 năm 2026
+
+## Hôm nay tôi đã làm gì?
+
+Tôi chưa đổi giao diện Home. Tôi kiểm tra để phần Mobile tiếp theo dùng đúng response `{ data, meta, error }`, cache và rate limit do Backend quản lý.
+
+## Khó khăn và cách tháo gỡ
+
+Màn leaderboard Flutter chưa có trong slice hiện tại. Tôi không tự tạo business rule ở Flutter, mà chờ API contract ổn định rồi mới viết repository, loading, empty và error state.
+
+## Tôi học được gì?
+
+Flutter nên hiển thị trạng thái và gọi API; điểm số, cache và giới hạn request thuộc về Backend. Cách chia ranh giới này giúp hai phần dễ kiểm thử hơn.
+
+## Trạng thái thật
+
+Đây là nhật ký chuẩn bị tích hợp. Màn leaderboard Mobile chưa hoàn thành end-to-end.

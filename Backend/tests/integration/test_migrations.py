@@ -143,6 +143,10 @@ def test_workout_log_constraint_and_migration_indexes_exist() -> None:
     assert {
         ("ix_workout_logs_user_logged_at", ("user_id", "logged_at")),
         ("ix_workout_logs_logged_at", ("logged_at",)),
+        (
+            "ix_workout_logs_leaderboard_logged_at_user_points",
+            ("logged_at", "user_id"),
+        ),
     } <= indexes["workout_logs"]
     assert {
         ("ix_points_transactions_user_created_at", ("user_id", "created_at")),

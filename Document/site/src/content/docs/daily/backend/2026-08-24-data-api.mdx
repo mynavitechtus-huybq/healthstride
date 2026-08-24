@@ -1,0 +1,33 @@
+---
+title: 'Backend: Data, Database và API - 24 tháng 8 năm 2026'
+description: 'Nhật ký chạy migration, seed dữ liệu và EXPLAIN ANALYZE.'
+---
+
+# Nhật ký Backend - 24 tháng 8 năm 2026
+
+## Hôm nay tôi đã làm gì?
+
+Tôi tiếp tục vertical slice theo kế hoạch Data/Database và API. Tôi thêm migration index, chạy PostgreSQL local, seed 1.000 user/workout và đo ba truy vấn bằng `EXPLAIN ANALYZE`.
+
+## Tôi làm như thế nào?
+
+- Thêm migration `20260824_02` với `upgrade` và `downgrade`.
+- Chạy `uv run alembic upgrade head`.
+- Chạy `uv run python -m app.db.seed --users 1000`.
+- Chạy `uv run python -m scripts.query_plans --output-dir ../Document/HealthStride/evidence/performance`.
+
+## Tôi gặp khó khăn gì?
+
+Lần đầu chạy script trực tiếp bằng `python scripts/query_plans.py`, Python không tìm thấy package `app`.
+
+## Tôi tháo gỡ ra sao?
+
+Tôi chạy script dưới dạng module từ thư mục `Backend`: `python -m scripts.query_plans`. Tôi cũng ghi lại lệnh này trong kế hoạch để người mới có thể chạy lại.
+
+## Tôi học được gì?
+
+Database có thể cho biết nó đang dùng index nào, đọc bao nhiêu buffer và mất bao lâu. Trong lần đo này, leaderboard dùng `Index Only Scan` trên index mới. Đây là số đo local, không phải lời hứa cho production.
+
+## Bằng chứng
+
+Kết quả đầy đủ nằm ở `Document/HealthStride/evidence/performance/2026-08-24-after.md`. Facebook/LINE và màn leaderboard Flutter chưa được nói là đã hoàn thành.

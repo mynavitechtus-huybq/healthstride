@@ -16,24 +16,24 @@ description: 'Nhật ký và tài liệu tham chiếu của dự án HealthStrid
 
 | Tài liệu | Nội dung | Đọc khi nào |
 |---|---|---|
-| [business-understanding.md](business-understanding.md) | Mục tiêu kinh doanh, actors, toàn bộ business rules (công thức điểm, badge, bảng cấp độ, thử thách, phần thưởng), dữ liệu, NFR, phạm vi, câu hỏi mở | Đọc đầu tiên — nền tảng của mọi tài liệu khác |
-| [decision-log.md](decision-log.md) | 7 quyết định đã chốt (D-001 → D-007): công thức điểm, bảng cấp độ, cơ chế hai loại điểm, đăng nhập, nhập tay, quy trình duyệt thưởng, trần chống gian lận | Khi cần biết vì sao hệ thống hoạt động theo cách hiện tại |
-| [usecase-overview.md](usecase-overview.md) | Danh sách use case theo 6 module, actor, độ ưu tiên, sơ đồ use case | Khi cần biết hệ thống làm được những gì |
-| [business-entities.md](business-entities.md) | 24 thực thể nghiệp vụ, từ điển trường, ràng buộc trong và giữa các thực thể | Khi thiết kế cơ sở dữ liệu hoặc hợp đồng API |
-| [screen-flow.md](screen-flow.md) | Sitemap, 29 màn hình có Screen ID, sơ đồ điều hướng, 3 luồng đi sâu | Khi thiết kế UI/UX hoặc lập kế hoạch triển khai màn hình |
-| [backlog.md](backlog.md) | 5 Epic → 14 Feature → 26 User Story kèm acceptance criteria | Khi lập sprint hoặc giao việc cho đội phát triển |
-| [function-list.md](function-list.md) | 35 chức năng kèm độ ưu tiên, độ phức tạp, traceability và **phạm vi MVP** | Khi estimate công sức và chốt phạm vi phát hành |
-| [screens/](screens/) | Screen spec chi tiết cho 4 màn ưu tiên cao — thành phần, behavior, trạng thái, lỗi | Khi implement hoặc viết test case cho từng màn |
-| [../DESIGN-SYSTEM.md](../DESIGN-SYSTEM.md) | Design system Flutter: màu, chữ, spacing, layout, motion, component gamification | Khi dựng giao diện |
+| [Business Understanding](/library/business/business-understanding/) | Mục tiêu kinh doanh, actors, business rules, dữ liệu và phạm vi | Đọc đầu tiên |
+| [Decision Log](/library/business/decision-log/) | Các quyết định đã chốt và lý do | Khi cần biết vì sao hệ thống hoạt động như hiện tại |
+| [Use case overview](/library/business/usecase-overview/) | Danh sách use case theo module, actor và ưu tiên | Khi cần biết hệ thống làm được gì |
+| [Business entities](/library/business/business-entities/) | Thực thể, từ điển trường và ràng buộc | Khi thiết kế database hoặc API |
+| [Screen flow](/library/business/screen-flow/) | Sitemap, Screen ID và luồng điều hướng | Khi thiết kế UI/UX |
+| [Backlog](/library/business/backlog/) | Epic, Feature, User Story và acceptance criteria | Khi lập sprint |
+| [Function list](/library/business/function-list/) | Chức năng, độ ưu tiên và phạm vi MVP | Khi estimate công sức |
+| [Screen specifications](/library/business/screens/) | Đặc tả chi tiết các màn ưu tiên | Khi implement hoặc viết test |
+| [Design System](/library/design-system/) | Màu, chữ, spacing, layout, motion và component | Khi dựng giao diện |
 
 ### Screen spec đã viết
 
 | Screen ID | Màn | Spec |
 |---|---|---|
-| `SCR-WO-11` | Log buổi tập | [screens/SCR-WO-11-log-workout.md](screens/SCR-WO-11-log-workout.md) |
-| `SCR-HOME-10` | Trang chủ / Dashboard | [screens/SCR-HOME-10-dashboard.md](screens/SCR-HOME-10-dashboard.md) |
-| `SCR-SC-10` | Bảng xếp hạng | [screens/SCR-SC-10-leaderboard.md](screens/SCR-SC-10-leaderboard.md) |
-| `SCR-RW-10` | Cửa hàng phần thưởng | [screens/SCR-RW-10-reward-store.md](screens/SCR-RW-10-reward-store.md) |
+| `SCR-WO-11` | Log buổi tập | [Mở đặc tả](/library/business/screens/scr-wo-11-log-workout/) |
+| `SCR-HOME-10` | Trang chủ / Dashboard | [Mở đặc tả](/library/business/screens/scr-home-10-dashboard/) |
+| `SCR-SC-10` | Bảng xếp hạng | [Mở đặc tả](/library/business/screens/scr-sc-10-leaderboard/) |
+| `SCR-RW-10` | Cửa hàng phần thưởng | [Mở đặc tả](/library/business/screens/scr-rw-10-reward-store/) |
 
 ---
 

@@ -92,9 +92,9 @@ flowchart TD
 | Screen ID | Tên màn | Loại | Route/entry | Use case chính | Guard/role note | Ý nghĩa nghiệp vụ | Tham chiếu spec | Evidence |
 |---|---|---|---|---|---|---|---|---|
 | SCR-AUTH-10 | Đăng nhập | Trang đầy | `/login` | — | Không cần đăng nhập | Hai lựa chọn: email công ty + mật khẩu, hoặc đăng nhập bằng Google Workspace | Chưa có | `[DECISION]` D-004 |
-| SCR-HOME-10 | Trang chủ / Dashboard | Trang đầy | `/home` | UC-GM-01, UC-SC-06 | Yêu cầu đăng nhập | Tổng quan điểm, level, streak, tip ngày, lối vào các module | [screens/SCR-HOME-10-dashboard.md](screens/SCR-HOME-10-dashboard.md) | `[FROM-CUSTOMER]` |
+| SCR-HOME-10 | Trang chủ / Dashboard | Trang đầy | `/home` | UC-GM-01, UC-SC-06 | Yêu cầu đăng nhập | Tổng quan điểm, level, streak, tip ngày, lối vào các module | [Mở đặc tả](/library/business/screens/scr-home-10-dashboard/) | `[FROM-CUSTOMER]` |
 | SCR-WO-10 | Lịch sử Workout | Trang đầy | `/workout/history` | UC-WO-02 | Yêu cầu đăng nhập | Danh sách các buổi tập đã log | Chưa có | `[FROM-CUSTOMER]` |
-| SCR-WO-11 | Log buổi tập | Bottom sheet | `/workout/log` | UC-WO-01 | Yêu cầu đăng nhập | Nhập loại hình, bài tập, thời lượng để ghi nhận buổi tập | [screens/SCR-WO-11-log-workout.md](screens/SCR-WO-11-log-workout.md) | `[FROM-CUSTOMER]` |
+| SCR-WO-11 | Log buổi tập | Bottom sheet | `/workout/log` | UC-WO-01 | Yêu cầu đăng nhập | Nhập loại hình, bài tập, thời lượng để ghi nhận buổi tập | [Mở đặc tả](/library/business/screens/scr-wo-11-log-workout/) | `[FROM-CUSTOMER]` |
 | SCR-WO-12 | Danh mục bài tập | Popup | `/workout/exercises` | UC-WO-03 | Yêu cầu đăng nhập | Chọn bài tập cụ thể (Squat/Deadlift/Yoga...) khi log | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-WO-13 | Đặt mục tiêu cá nhân | Popup | `/workout/goal` | UC-WO-04 | Yêu cầu đăng nhập | Thiết lập mục tiêu tuần/tháng | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-WO-14 | Biểu đồ tiến độ | Tab | `/workout/progress` | UC-WO-05 | Yêu cầu đăng nhập | Calories burned, weight trend, tần suất tập | Chưa có | `[FROM-CUSTOMER]` |
@@ -102,13 +102,13 @@ flowchart TD
 | SCR-GM-10 | Huy hiệu (Badges) | Trang đầy | `/gamification/badges` | UC-GM-02 | Yêu cầu đăng nhập | Xem badge đã đạt và badge chưa đạt | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-GM-11 | Chi tiết cấp độ (Level) | Popup | `/gamification/level` | UC-GM-01 | Yêu cầu đăng nhập | Xem tiến độ lên cấp tiếp theo | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-GM-12 | Thử thách tuần | Trang đầy | `/gamification/challenges` | UC-GM-03 | Yêu cầu đăng nhập | Danh sách thử thách và tiến độ | Chưa có | `[FROM-CUSTOMER]` |
-| SCR-SC-10 | Bảng xếp hạng (Leaderboard) | Trang đầy (có tab tuần/tháng) | `/community/leaderboard` | UC-SC-01 | Yêu cầu đăng nhập | Top 10 điểm/streak, rank cá nhân | [screens/SCR-SC-10-leaderboard.md](screens/SCR-SC-10-leaderboard.md) | `[FROM-CUSTOMER]` |
+| SCR-SC-10 | Bảng xếp hạng (Leaderboard) | Trang đầy (có tab tuần/tháng) | `/community/leaderboard` | UC-SC-01 | Yêu cầu đăng nhập | Top 10 điểm/streak, rank cá nhân | [Mở đặc tả](/library/business/screens/scr-sc-10-leaderboard/) | `[FROM-CUSTOMER]` |
 | SCR-SC-11 | Bạn bè | Trang đầy | `/community/friends` | UC-SC-02 | Yêu cầu đăng nhập | Danh sách bạn bè, thêm bạn | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-SC-12 | Chi tiết Gym Team | Trang đầy | `/community/team/:id` | UC-SC-04 | Yêu cầu đăng nhập, phải là thành viên hoặc xem công khai `[NEEDS-CONFIRMATION]` | Thông tin nhóm, thành viên, điểm nhóm | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-SC-13 | Tạo Gym Team | Popup | `/community/team/create` | UC-SC-04 | Yêu cầu đăng nhập | Tạo nhóm 3–5 người | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-SC-20 | Activity Feed | Trang đầy | `/community/feed` | UC-SC-05 | Yêu cầu đăng nhập | Bảng tin hoạt động toàn công ty | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-SC-21 | Chi tiết bài đăng | Popup | `/community/feed/:postId` | UC-SC-03, UC-SC-05 | Yêu cầu đăng nhập | Xem comment/reaction, cheer | Chưa có | `[FROM-CUSTOMER]` |
-| SCR-RW-10 | Cửa hàng phần thưởng | Trang đầy | `/reward/store` | UC-RW-01 | Yêu cầu đăng nhập | Danh mục quà theo mốc điểm | [screens/SCR-RW-10-reward-store.md](screens/SCR-RW-10-reward-store.md) | `[FROM-CUSTOMER]` |
+| SCR-RW-10 | Cửa hàng phần thưởng | Trang đầy | `/reward/store` | UC-RW-01 | Yêu cầu đăng nhập | Danh mục quà theo mốc điểm | [Mở đặc tả](/library/business/screens/scr-rw-10-reward-store/) | `[FROM-CUSTOMER]` |
 | SCR-RW-11 | Xác nhận đổi quà | Popup | `/reward/redeem/:id` | UC-RW-02 | Yêu cầu đăng nhập, đủ điểm | Xác nhận dùng điểm đổi một phần thưởng | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-RW-12 | Lịch sử đổi quà | Tab | `/reward/history` | UC-RW-03 | Yêu cầu đăng nhập | Trạng thái các yêu cầu đã gửi | Chưa có | `[FROM-CUSTOMER]` |
 | SCR-HE-10 | Log dinh dưỡng | Popup | `/health/nutrition` | UC-HE-01 | Yêu cầu đăng nhập | Nhập calories tiêu thụ | Chưa có | `[FROM-CUSTOMER]` |

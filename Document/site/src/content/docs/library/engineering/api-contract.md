@@ -122,3 +122,15 @@ The home payload is assembled only from the August `users` and `workout_catalog`
 ## Generated API Reference
 
 OpenAPI documents structured `200` success envelopes and `401` error envelopes for both protected endpoints. Swagger UI is the generated reference for the `profile`, Home, and authentication-envelope schemas. Routing errors also use the standard error envelope.
+
+## Giới hạn request và cache
+
+- GET theo user: tối đa 100 request/phút.
+- POST theo user: tối đa 10 request/phút.
+- Rate limit dùng Redis sliding window và Lua script nguyên tử.
+- Leaderboard dùng cache-aside, TTL 60 giây, invalidation sau khi ghi workout.
+- Lock cache có token để request cũ không xóa nhầm lock của request mới.
+
+## Provider đăng nhập
+
+Trong scope tháng 8, Mobile dùng Google Sign-In và Backend kiểm tra Firebase ID token. Facebook và LINE vẫn là backlog cho slice riêng; secret không được đưa vào source code hoặc tài liệu public.
