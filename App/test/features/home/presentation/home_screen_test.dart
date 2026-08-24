@@ -5,6 +5,8 @@ import 'package:fitness_application/features/home/domain/home_dashboard.dart';
 import 'package:fitness_application/features/home/domain/home_repository.dart';
 import 'package:fitness_application/features/home/presentation/home_controller.dart';
 import 'package:fitness_application/features/home/presentation/home_screen.dart';
+import 'package:fitness_application/features/workouts/domain/logged_workout.dart';
+import 'package:fitness_application/features/workouts/domain/workout_repository.dart';
 import 'package:fitness_application/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -142,6 +144,34 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('opens the log workout screen from the Home action', (
+    tester,
+  ) async {
+    final controller = HomeController(
+      repository: _QueuedHomeRepository([
+        ApiResult.success(_sampleDashboard()),
+      ]),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _testApp(
+        HomeScreen(
+          controller: controller,
+          onSignOut: () async {},
+          workoutRepository: _FakeWorkoutRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Log workout'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Log workout'), findsOneWidget);
+    expect(find.text('Save workout'), findsOneWidget);
+  });
+
   testWidgets('shows fallback plans when there is no plan for today', (
     tester,
   ) async {
@@ -157,10 +187,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.drag(
-      find.byType(ListView).first,
-      const Offset(0, -300),
-    );
+    await tester.drag(find.byType(ListView).first, const Offset(0, -300));
     await tester.pumpAndSettle();
 
     expect(find.text('Push Up'), findsOneWidget);
@@ -252,6 +279,23 @@ class _DeferredHomeRepository implements HomeRepository {
 
   @override
   Future<ApiResult<HomeDashboard>> fetchDashboard() => _result;
+}
+
+class _FakeWorkoutRepository implements WorkoutRepository {
+  @override
+  Future<ApiResult<LoggedWorkout>> logWorkout({
+    required WorkoutDraft draft,
+    required String idempotencyKey,
+  }) async {
+    return const ApiResult.success(
+      LoggedWorkout(
+        id: 'workout-1',
+        calories: 100,
+        pointsAwarded: 10,
+        capped: false,
+      ),
+    );
+  }
 }
 
 HomeDashboard _sampleDashboard({

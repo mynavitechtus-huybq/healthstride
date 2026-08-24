@@ -38,6 +38,9 @@ class SqlAlchemyUserRepository:
 
         await self._session.commit()
         await self._session.refresh(user)
+        # Refresh starts a new read transaction; close it before the next
+        # request service opens its own explicit transaction.
+        await self._session.commit()
         return user
 
 

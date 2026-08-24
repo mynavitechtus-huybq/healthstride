@@ -1,4 +1,5 @@
 import 'package:fitness_application/theme/app_colors.dart';
+import 'package:fitness_application/core/network/api_client.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/weekly_leaderboard.dart';
@@ -64,7 +65,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       );
     }
     if (state.leaderboard == null) {
-      return _ErrorView(onRetry: widget.controller.retry);
+      return _ErrorView(
+        failure: state.failure,
+        onRetry: widget.controller.retry,
+      );
     }
 
     final leaderboard = state.leaderboard!;
@@ -178,9 +182,10 @@ class _EmptyView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.onRetry});
+  const _ErrorView({required this.onRetry, this.failure});
 
   final Future<void> Function() onRetry;
+  final ApiFailure? failure;
 
   @override
   Widget build(BuildContext context) {
@@ -197,6 +202,14 @@ class _ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
+            if (failure != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                failure!.message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onRetry,

@@ -1,3 +1,4 @@
+import logging
 from typing import Any, cast
 
 from fastapi import FastAPI, Request
@@ -12,6 +13,7 @@ from app.features.leaderboard.router import router as leaderboard_router
 from app.features.workouts.router import router as workouts_router
 
 app = FastAPI(title="HealthStride API", lifespan=redis_lifespan)
+logger = logging.getLogger("healthstride.api")
 app.include_router(home_router, prefix="/v1")
 app.include_router(workouts_router, prefix="/v1")
 app.include_router(leaderboard_router, prefix="/v1")
@@ -56,6 +58,10 @@ async def request_validation_exception_handler(
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(_request: Request, _exc: Exception) -> JSONResponse:
+    logger.error(
+        "Unhandled application exception",
+        exc_info=(type(_exc), _exc, _exc.__traceback__),
+    )
     return error_response(
         status_code=500,
         code="INTERNAL_SERVER_ERROR",
