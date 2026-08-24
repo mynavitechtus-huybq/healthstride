@@ -7,6 +7,9 @@ import '../domain/home_dashboard.dart';
 import '../../leaderboard/domain/leaderboard_repository.dart';
 import '../../leaderboard/presentation/leaderboard_controller.dart';
 import '../../leaderboard/presentation/leaderboard_screen.dart';
+import '../../workouts/domain/workout_repository.dart';
+import '../../workouts/presentation/log_workout_controller.dart';
+import '../../workouts/presentation/log_workout_screen.dart';
 import 'home_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class HomeScreen extends StatefulWidget {
     required this.controller,
     required this.onSignOut,
     this.leaderboardRepository,
+    this.workoutRepository,
     this.themeMode = ThemeMode.system,
     this.onThemeModeChanged,
     super.key,
@@ -22,6 +26,7 @@ class HomeScreen extends StatefulWidget {
   final HomeController controller;
   final Future<void> Function() onSignOut;
   final LeaderboardRepository? leaderboardRepository;
+  final WorkoutRepository? workoutRepository;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode>? onThemeModeChanged;
 
@@ -114,6 +119,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     themeMode: widget.themeMode,
                     onThemeModeChanged: widget.onThemeModeChanged,
                     onSignOut: widget.onSignOut,
+                    onLogWorkout: widget.workoutRepository == null
+                        ? null
+                        : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => LogWorkoutScreen(
+                                controller: LogWorkoutController(
+                                  repository: widget.workoutRepository!,
+                                ),
+                              ),
+                            ),
+                          ),
                   );
                 },
               )
@@ -136,6 +152,7 @@ class _HomeDashboardView extends StatefulWidget {
     required this.state,
     required this.onRefresh,
     required this.onSignOut,
+    this.onLogWorkout,
     required this.themeMode,
     this.onThemeModeChanged,
   });
@@ -143,6 +160,7 @@ class _HomeDashboardView extends StatefulWidget {
   final HomeViewState state;
   final RefreshCallback onRefresh;
   final Future<void> Function() onSignOut;
+  final VoidCallback? onLogWorkout;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode>? onThemeModeChanged;
 
@@ -239,6 +257,11 @@ class _HomeDashboardViewState extends State<_HomeDashboardView> {
                   themeMode: widget.themeMode,
                   onThemeModeChanged: widget.onThemeModeChanged!,
                 ),
+              IconButton(
+                onPressed: widget.onLogWorkout,
+                icon: const Icon(Icons.add_task_rounded),
+                tooltip: 'Log workout',
+              ),
               IconButton(
                 onPressed: widget.onSignOut,
                 icon: const Icon(Icons.logout_rounded),

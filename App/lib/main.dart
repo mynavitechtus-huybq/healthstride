@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/config/app_environment.dart';
 import 'core/network/api_client.dart';
 import 'core/network/http_get_request.dart';
+import 'core/network/http_post_request.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/auth_gate.dart';
@@ -13,6 +14,8 @@ import 'features/home/presentation/home_controller.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/leaderboard/data/api_leaderboard_repository.dart';
 import 'features/leaderboard/domain/leaderboard_repository.dart';
+import 'features/workouts/data/api_workout_repository.dart';
+import 'features/workouts/domain/workout_repository.dart';
 import 'firebase_bootstrap.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
@@ -29,6 +32,7 @@ class MyApp extends StatefulWidget {
     AuthRepository? authRepository,
     HomeRepository? homeRepository,
     LeaderboardRepository? leaderboardRepository,
+    WorkoutRepository? workoutRepository,
     ThemeController? themeController,
     Key? key,
   }) {
@@ -44,6 +48,11 @@ class MyApp extends StatefulWidget {
           (homeRepository == null
               ? _buildLeaderboardRepository(resolvedAuthRepository)
               : null),
+      workoutRepository:
+          workoutRepository ??
+          (homeRepository == null
+              ? _buildWorkoutRepository(resolvedAuthRepository)
+              : null),
       themeController: themeController ?? ThemeController.inMemory(),
       key: key,
     );
@@ -53,6 +62,7 @@ class MyApp extends StatefulWidget {
     required this._authRepository,
     required this._homeRepository,
     required this._leaderboardRepository,
+    required this._workoutRepository,
     required this._themeController,
     super.key,
   });
@@ -60,6 +70,7 @@ class MyApp extends StatefulWidget {
   final AuthRepository _authRepository;
   final HomeRepository _homeRepository;
   final LeaderboardRepository? _leaderboardRepository;
+  final WorkoutRepository? _workoutRepository;
   final ThemeController _themeController;
 
   static HomeRepository _buildHomeRepository(AuthRepository authRepository) {
@@ -80,6 +91,22 @@ class MyApp extends StatefulWidget {
       ApiClient(
         tokenProvider: authRepository.getIdToken,
         getRequest: createHttpGetRequest(
+          baseUrl: AppEnvironment.instance.apiBaseUrl,
+        ),
+      ),
+    );
+  }
+
+  static WorkoutRepository _buildWorkoutRepository(
+    AuthRepository authRepository,
+  ) {
+    return ApiWorkoutRepository(
+      ApiClient(
+        tokenProvider: authRepository.getIdToken,
+        getRequest: createHttpGetRequest(
+          baseUrl: AppEnvironment.instance.apiBaseUrl,
+        ),
+        postRequest: createHttpPostRequest(
           baseUrl: AppEnvironment.instance.apiBaseUrl,
         ),
       ),
@@ -122,6 +149,7 @@ class _MyAppState extends State<MyApp> {
           key: ValueKey(user.id),
           repository: widget._homeRepository,
           leaderboardRepository: widget._leaderboardRepository,
+          workoutRepository: widget._workoutRepository,
           onSignOut: widget._authRepository.signOut,
           themeMode: widget._themeController.themeMode,
           onThemeModeChanged: widget._themeController.setThemeMode,
@@ -135,6 +163,7 @@ class _AuthenticatedHomeScreen extends StatefulWidget {
   const _AuthenticatedHomeScreen({
     required this.repository,
     this.leaderboardRepository,
+    this.workoutRepository,
     required this.onSignOut,
     required this.themeMode,
     required this.onThemeModeChanged,
@@ -143,6 +172,7 @@ class _AuthenticatedHomeScreen extends StatefulWidget {
 
   final HomeRepository repository;
   final LeaderboardRepository? leaderboardRepository;
+  final WorkoutRepository? workoutRepository;
   final Future<void> Function() onSignOut;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
@@ -181,6 +211,7 @@ class _AuthenticatedHomeScreenState extends State<_AuthenticatedHomeScreen> {
     return HomeScreen(
       controller: _controller,
       leaderboardRepository: widget.leaderboardRepository,
+      workoutRepository: widget.workoutRepository,
       onSignOut: widget.onSignOut,
       themeMode: widget.themeMode,
       onThemeModeChanged: widget.onThemeModeChanged,
