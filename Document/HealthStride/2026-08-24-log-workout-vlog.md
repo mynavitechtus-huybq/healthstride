@@ -35,6 +35,10 @@ Một form nhỏ vẫn cần nhiều trạng thái: validate, đang gửi, thàn
 - `flutter test`: tất cả test pass.
 - Test form: kiểm tra cardio có distance và chặn duration bằng 0.
 
+### Lỗi phát sinh sau khi chạy thật
+
+Khi chọn Strength hoặc Flexibility, API trả `422` vì label trên form chưa trùng enum Backend. Backend dùng `weight_lifting` và `yoga`, còn UI đang gửi `strength` và `flexibility`. Cardio đi qua validation nhưng vẫn cần kiểm tra log Backend vì đang trả `500`.
+
 ## Backend
 
 Backend đã có endpoint `POST /v1/workouts`, rate limit POST theo user và invalidation cache Leaderboard. Trong slice này tôi sẽ dùng contract hiện tại, chưa thay đổi business rule.

@@ -44,6 +44,10 @@ Tôi dùng endpoint `POST /v1/workouts` đang có sẵn. Backend đã có valida
 - `flutter test`: pass.
 - Widget test kiểm tra submit cardio và chặn duration không hợp lệ.
 
+## Lỗi phát sinh khi chạy thật
+
+Strength và Flexibility bị `422` vì UI gửi label kỹ thuật khác enum Backend. Backend nhận `weight_lifting` và `yoga`, nên Mobile cần map label dễ hiểu sang value API. Cardio qua được validation nhưng đang trả `500`, cần xem log Backend để sửa đúng nguyên nhân thay vì đoán.
+
 ## Mục tiêu học tập
 
 Tôi muốn hiểu rõ hơn cách một form Flutter giữ trạng thái, chờ API trả lời và không tạo dữ liệu trùng khi người dùng bấm nút nhiều lần.
