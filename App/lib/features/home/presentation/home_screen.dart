@@ -696,6 +696,11 @@ class _HomeBottomNavigation extends StatelessWidget {
       'assets/home/icons/profile.svg',
     ];
     final labels = ['Home', 'Explore', 'Statistics', 'Profile'];
+    const activeWidths = [95.0, 104.0, 112.0, 96.0];
+    final activeAlignment = Alignment(
+      -1 + (2 * selectedIndex / (labels.length - 1)),
+      0,
+    );
 
     return Container(
       margin: const EdgeInsets.fromLTRB(25, 0, 25, 12),
@@ -704,69 +709,87 @@ class _HomeBottomNavigation extends StatelessWidget {
         color: AppColors.background,
         borderRadius: BorderRadius.circular(32),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (var index = 0; index < labels.length; index++)
-            Tooltip(
-              message: labels[index],
-              child: InkWell(
-                onTap: () => onTap(index),
-                borderRadius: BorderRadius.circular(43),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOutCubic,
-                  padding: index == selectedIndex
-                      ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
-                      : const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                  decoration: BoxDecoration(
-                    color: index == selectedIndex
-                        ? AppColors.accent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(43),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(
-                        iconPaths[index],
-                        width: 24,
-                        height: 24,
-                        colorFilter: ColorFilter.mode(
-                          index == selectedIndex
-                              ? AppColors.background
-                              : Colors.white,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      AnimatedSize(
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOutCubic,
-                        child: index == selectedIndex
-                            ? Row(
-                                children: [
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    labels[index],
-                                    style: const TextStyle(
-                                      color: AppColors.background,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
+      child: SizedBox(
+        height: 44,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedAlign(
+              alignment: activeAlignment,
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeInOutCubic,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 260),
+                curve: Curves.easeInOutCubic,
+                width: activeWidths[selectedIndex],
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(43),
                 ),
               ),
             ),
-        ],
+            Row(
+              children: [
+                for (var index = 0; index < labels.length; index++)
+                  Expanded(
+                    child: Tooltip(
+                      message: labels[index],
+                      child: InkWell(
+                        onTap: () => onTap(index),
+                        borderRadius: BorderRadius.circular(43),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SvgPicture.asset(
+                                  iconPaths[index],
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: ColorFilter.mode(
+                                    index == selectedIndex
+                                        ? AppColors.background
+                                        : Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                AnimatedSize(
+                                  duration: const Duration(milliseconds: 220),
+                                  curve: Curves.easeInOutCubic,
+                                  child: index == selectedIndex
+                                      ? Row(
+                                          children: [
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              labels[index],
+                                              style: const TextStyle(
+                                                color: AppColors.background,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
