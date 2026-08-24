@@ -31,11 +31,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Object? _snackBarFailureToken;
+  var _selectedTab = 0;
+  LeaderboardController? _leaderboardController;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_handleControllerChanged);
+    if (widget.leaderboardRepository != null) {
+      _leaderboardController = LeaderboardController(
+        repository: widget.leaderboardRepository!,
+      );
+    }
     widget.controller.load();
   }
 
@@ -53,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     widget.controller.removeListener(_handleControllerChanged);
+    _leaderboardController?.dispose();
     super.dispose();
   }
 
@@ -83,49 +91,40 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ValueListenableBuilder<HomeViewState>(
-          valueListenable: widget.controller,
-          builder: (context, state, child) {
-            if (state.isInitialLoading && state.dashboard == null) {
-              return const _HomeLoadingView();
-            }
+        child: _selectedTab == 1 && _leaderboardController != null
+            ? LeaderboardScreen(
+                controller: _leaderboardController!,
+                embedded: true,
+              )
+            : _selectedTab == 0
+            ? ValueListenableBuilder<HomeViewState>(
+                valueListenable: widget.controller,
+                builder: (context, state, child) {
+                  if (state.isInitialLoading && state.dashboard == null) {
+                    return const _HomeLoadingView();
+                  }
 
-            if (state.dashboard == null) {
-              return _HomeErrorView(onRetry: widget.controller.retry);
-            }
+                  if (state.dashboard == null) {
+                    return _HomeErrorView(onRetry: widget.controller.retry);
+                  }
 
-            return _HomeDashboardView(
-              state: state,
-              onRefresh: widget.controller.refresh,
-              themeMode: widget.themeMode,
-              onThemeModeChanged: widget.onThemeModeChanged,
-              onSignOut: widget.onSignOut,
-            );
-          },
-        ),
+                  return _HomeDashboardView(
+                    state: state,
+                    onRefresh: widget.controller.refresh,
+                    themeMode: widget.themeMode,
+                    onThemeModeChanged: widget.onThemeModeChanged,
+                    onSignOut: widget.onSignOut,
+                  );
+                },
+              )
+            : _ComingSoonView(label: _tabLabel(_selectedTab)),
       ),
       bottomNavigationBar: _HomeBottomNavigation(
+        selectedIndex: _selectedTab,
         onTap: (index) {
-          if (index == 0) return;
-          if (index == 1 && widget.leaderboardRepository != null) {
-            final controller = LeaderboardController(
-              repository: widget.leaderboardRepository!,
-            );
-            Navigator.of(context)
-                .push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => LeaderboardScreen(controller: controller),
-                  ),
-                )
-                .whenComplete(controller.dispose);
-            return;
-          }
-          const labels = ['Home', 'Explore', 'Statistics', 'Profile'];
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text('${labels[index]} is coming soon.')),
-            );
+          if (index == _selectedTab) return;
+          setState(() => _selectedTab = index);
+          if (index == 1) _leaderboardController?.load();
         },
       ),
     );
@@ -680,9 +679,13 @@ class _HomeErrorView extends StatelessWidget {
 }
 
 class _HomeBottomNavigation extends StatelessWidget {
-  const _HomeBottomNavigation({required this.onTap});
+  const _HomeBottomNavigation({
+    required this.onTap,
+    required this.selectedIndex,
+  });
 
   final ValueChanged<int> onTap;
+  final int selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -709,7 +712,7 @@ class _HomeBottomNavigation extends StatelessWidget {
               message: labels[index],
               child: IconButton(
                 onPressed: () => onTap(index),
-                icon: index == 0
+                icon: index == selectedIndex
                     ? DecoratedBox(
                         decoration: BoxDecoration(
                           color: AppColors.accent,
@@ -749,6 +752,25 @@ class _HomeBottomNavigation extends StatelessWidget {
     );
   }
 }
+
+class _ComingSoonView extends StatelessWidget {
+  const _ComingSoonView({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        '$label is coming soon.',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+    );
+  }
+}
+
+String _tabLabel(int index) =>
+    const ['Home', 'Explore', 'Statistics', 'Profile'][index];
 
 String _greetingName(HomeProfile profile) {
   final displayName = profile.displayName.trim();

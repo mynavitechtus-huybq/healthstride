@@ -5,9 +5,14 @@ import '../domain/weekly_leaderboard.dart';
 import 'leaderboard_controller.dart';
 
 class LeaderboardScreen extends StatefulWidget {
-  const LeaderboardScreen({required this.controller, super.key});
+  const LeaderboardScreen({
+    required this.controller,
+    this.embedded = false,
+    super.key,
+  });
 
   final LeaderboardController controller;
+  final bool embedded;
 
   @override
   State<LeaderboardScreen> createState() => _LeaderboardScreenState();
@@ -34,6 +39,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     final state = widget.controller.value;
+    final body = _buildBody(context, state);
+    if (widget.embedded) return body;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Leaderboard'),
@@ -44,7 +52,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
-      body: _buildBody(context, state),
+      body: body,
     );
   }
 

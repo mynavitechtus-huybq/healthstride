@@ -7,11 +7,11 @@ description: 'Câu chuyện nối màn Leaderboard Flutter với API Backend.'
 
 ## Tôi đã làm gì?
 
-Tôi thay tab Explore đang báo “coming soon” bằng màn Leaderboard. Màn gọi API tuần, hiển thị thứ hạng hiện tại và danh sách người dùng cùng số điểm.
+Tôi thay tab Explore đang báo “coming soon” bằng màn Leaderboard. Màn gọi API tuần, hiển thị thứ hạng hiện tại và danh sách người dùng cùng số điểm. Màn nằm trong cùng shell của Home nên bottom menu vẫn còn khi chuyển tab.
 
 ## Tôi làm như thế nào?
 
-Tôi tạo model, repository, controller và screen. Controller tách loading, dữ liệu, empty và lỗi để UI dễ đọc và dễ test.
+Tôi tạo model, repository, controller và screen. Home giữ `selectedTab` và chỉ thay phần nội dung; tab active hiển thị icon cùng title. Controller tách loading, dữ liệu, empty và lỗi để UI dễ đọc và dễ test.
 
 ## Khó khăn và cách tháo gỡ
 

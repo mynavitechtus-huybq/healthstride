@@ -4,11 +4,11 @@
 
 ### Hôm nay tôi đã làm gì?
 
-Tôi thay tab Explore đang báo “coming soon” bằng màn Leaderboard. Màn này gọi API tuần, hiển thị thứ hạng hiện tại của tôi và danh sách người dùng cùng số điểm.
+Tôi thay tab Explore đang báo “coming soon” bằng màn Leaderboard. Màn này gọi API tuần, hiển thị thứ hạng hiện tại của tôi và danh sách người dùng cùng số điểm. Leaderboard nằm trong cùng shell của Home, nên bottom menu vẫn còn khi chuyển tab.
 
 ### Tôi làm như thế nào?
 
-Tôi tạo model `WeeklyLeaderboard`, repository `ApiLeaderboardRepository`, controller `LeaderboardController` và màn `LeaderboardScreen`. Controller tách rõ loading, dữ liệu, empty và lỗi để UI không phải tự đoán trạng thái.
+Tôi tạo model `WeeklyLeaderboard`, repository `ApiLeaderboardRepository`, controller `LeaderboardController` và màn `LeaderboardScreen`. Controller tách rõ loading, dữ liệu, empty và lỗi để UI không phải tự đoán trạng thái. Home giữ `selectedTab` và chỉ thay phần body; menu active hiển thị icon cùng title.
 
 ### Tôi gặp khó khăn gì?
 
