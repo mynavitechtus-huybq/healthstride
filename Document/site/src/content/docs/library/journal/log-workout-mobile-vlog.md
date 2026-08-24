@@ -54,6 +54,8 @@ Form workout cũng cần bắt exception ngoài dự kiến để không kẹt n
 
 Với lỗi `INTERNAL_SERVER_ERROR`, Backend cần ghi stack trace ở terminal nhưng vẫn trả message an toàn cho Mobile.
 
+Traceback cho thấy `refresh()` sau bước xác thực đã mở transaction, sau đó service workout cố `begin()` thêm lần nữa. Tôi sẽ đóng transaction xác thực trước khi ghi workout.
+
 ## Mục tiêu học tập
 
 Tôi muốn hiểu rõ hơn cách một form Flutter giữ trạng thái, chờ API trả lời và không tạo dữ liệu trùng khi người dùng bấm nút nhiều lần.

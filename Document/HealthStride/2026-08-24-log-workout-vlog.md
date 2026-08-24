@@ -45,6 +45,8 @@ Khi submit workout, controller cũng cần bắt exception ngoài dự kiến đ
 
 Lỗi `INTERNAL_SERVER_ERROR` vẫn cần được nhìn thấy ở terminal Backend. Tôi sẽ ghi stack trace ở server nhưng không trả chi tiết nhạy cảm về Mobile.
 
+Traceback cho thấy lỗi thật là SQLAlchemy mở transaction sau `refresh()` trong bước xác thực, rồi workout lại gọi `session.begin()`. Tôi sẽ đóng transaction xác thực trước khi đi vào transaction ghi workout.
+
 ## Backend
 
 Backend đã có endpoint `POST /v1/workouts`, rate limit POST theo user và invalidation cache Leaderboard. Trong slice này tôi sẽ dùng contract hiện tại, chưa thay đổi business rule.
