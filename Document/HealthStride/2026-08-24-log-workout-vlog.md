@@ -43,6 +43,8 @@ Leaderboard cũng đang có thông báo chung khi request thất bại. Tôi s�
 
 Khi submit workout, controller cũng cần bắt exception ngoài dự kiến để nút không bị kẹt ở trạng thái loading. Tôi sẽ thêm trạng thái lỗi ổn định và hiển thị mã lỗi cho việc debug local.
 
+Lỗi `INTERNAL_SERVER_ERROR` vẫn cần được nhìn thấy ở terminal Backend. Tôi sẽ ghi stack trace ở server nhưng không trả chi tiết nhạy cảm về Mobile.
+
 ## Backend
 
 Backend đã có endpoint `POST /v1/workouts`, rate limit POST theo user và invalidation cache Leaderboard. Trong slice này tôi sẽ dùng contract hiện tại, chưa thay đổi business rule.

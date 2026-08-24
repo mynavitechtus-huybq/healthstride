@@ -52,6 +52,8 @@ Leaderboard cũng đang chỉ hiện một câu lỗi chung. Tôi sẽ cho hiể
 
 Form workout cũng cần bắt exception ngoài dự kiến để không kẹt nút Save ở trạng thái loading. Mã lỗi sẽ được hiển thị để kiểm tra local rõ ràng hơn.
 
+Với lỗi `INTERNAL_SERVER_ERROR`, Backend cần ghi stack trace ở terminal nhưng vẫn trả message an toàn cho Mobile.
+
 ## Mục tiêu học tập
 
 Tôi muốn hiểu rõ hơn cách một form Flutter giữ trạng thái, chờ API trả lời và không tạo dữ liệu trùng khi người dùng bấm nút nhiều lần.
