@@ -1,14 +1,16 @@
 ---
-title: 'HealthStride: SCR HOME 10 dashboard'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Đặc tả màn Trang chủ / Dashboard'
+description: 'Đặc tả chi tiết SCR-HOME-10: thành phần, hành vi, trạng thái và lỗi.'
 ---
 # Screen Spec — SCR-HOME-10 Trang chủ / Dashboard
+
+Đây là màn đầu tiên người dùng thấy sau khi đăng nhập, nên mình đặc tả nó kỹ nhất: mọi thành phần, mọi trạng thái loading/lỗi, để khi ngồi code không phải đoán UX.
 
 > **Trạng thái**: Draft v1.0
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.1–6.3, `decision-log.md` D-002/D-003, `screen-flow.md`
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: [/library/design-system/](/library/design-system/)
 
 - **Screen ID:** `SCR-HOME-10`
 - **Business name:** Trang chủ / Dashboard

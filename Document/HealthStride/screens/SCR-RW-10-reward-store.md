@@ -4,7 +4,7 @@
 > **Cập nhật lần cuối**: 2026-08-11
 > **Owner**: BA/PM
 > **Nguồn chính**: `business-understanding.md` §6.8, `decision-log.md` D-003/D-006, `business-entities.md` (RewardCatalogItem, RewardRedemption)
-> **Design system**: `Document/DESIGN-SYSTEM.md`
+> **Design system**: `Document/HealthStride/design-system.md`
 
 - **Screen ID:** `SCR-RW-10`
 - **Business name:** Cửa hàng phần thưởng

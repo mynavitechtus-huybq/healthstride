@@ -85,7 +85,7 @@ Tôi học được cách đi từ lỗi trên simulator xuống log Backend, r�
 
 ## Liên kết tổng
 
-- [Kế hoạch vertical slice tháng 8](/library/plans/2026-08-19-august-vertical-slice/)
+- [Thiết kế vertical slice tháng 8](/library/engineering/vertical-slice-design/)
 - [Kế hoạch Data, Database và API](/library/plans/2026-08-24-data-api/)
 - [Evidence Data và API](/library/engineering/data-api-evidence/)
 - [API contract và OpenAPI](/library/engineering/api-contract/)

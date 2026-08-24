@@ -1,6 +1,6 @@
 ---
-title: 'HealthStride: home figma vlog'
-description: 'Nhật ký và tài liệu tham chiếu của dự án HealthStride.'
+title: 'Vlog: Home theo Figma - 20 tháng 8 năm 2026'
+description: 'Nhật ký chuyển thiết kế Figma của màn Home/Dashboard sang Flutter.'
 ---
 # Nhật ký xây dựng: Home theo Figma
 

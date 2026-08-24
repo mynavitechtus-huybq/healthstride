@@ -1,12 +1,14 @@
 ---
-title: 'HealthStride: api contract'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'API Contract'
+description: 'Envelope response, endpoint và quy ước lỗi dùng chung của HealthStride API.'
 ---
-# HealthStride API Contract
+# API Contract — HealthStride
+
+Đây là tài liệu mình dùng làm điểm tựa mỗi khi mở một endpoint mới: envelope response, cách xác thực, và những giới hạn request cần nhớ. Ban đầu mình hay quên field nào bắt buộc, nên viết hẳn ra đây để tra lại thay vì đoán.
 
 ## Envelope
 
-Every endpoint returns the same top-level envelope:
+Mọi endpoint đều trả về cùng một envelope ở tầng ngoài cùng:
 
 ```json
 {
@@ -16,9 +18,9 @@ Every endpoint returns the same top-level envelope:
 }
 ```
 
-`data` contains the endpoint result on success. `meta` is an object reserved for response metadata. On error, `data` is `null`, `meta` remains an object, and `error` contains a stable code and a user-safe message.
+`data` chứa kết quả của endpoint khi thành công. `meta` là object dành riêng cho metadata của response. Khi có lỗi, `data` là `null`, `meta` vẫn là object, còn `error` chứa một mã lỗi ổn định cùng thông điệp an toàn để hiển thị cho người dùng.
 
-Request validation errors return HTTP `422` with `error.code` set to `REQUEST_VALIDATION_FAILED` and `error.message` set to `Request validation failed.`. The optional `error.details` value is a list of safe field errors containing `loc`, `msg`, and `type`; invalid input values are not echoed.
+Lỗi validate request trả về HTTP `422` với `error.code` là `REQUEST_VALIDATION_FAILED` và `error.message` là `Request validation failed.`. Giá trị `error.details` (không bắt buộc) là danh sách lỗi theo field gồm `loc`, `msg`, `type`; giá trị input không hợp lệ sẽ không bị echo lại.
 
 ```json
 {
@@ -33,19 +35,19 @@ Request validation errors return HTTP `422` with `error.code` set to `REQUEST_VA
 
 ## Authentication
 
-`GET /v1/me` and `GET /v1/home` require an HTTP Authorization header:
+`GET /v1/me` và `GET /v1/home` yêu cầu header Authorization:
 
 ```http
 Authorization: Bearer <Firebase ID token>
 ```
 
-The API verifies the token server-side through Firebase Admin before it reads or writes local user data. The verified Firebase UID, email, and display name are the only identity inputs used to upsert the local user. Client-supplied identity headers and request-body user identifiers are never accepted as authority.
+API xác thực token ở phía server qua Firebase Admin trước khi đọc hoặc ghi dữ liệu user local. Firebase UID, email và display name đã được xác thực là các input định danh duy nhất dùng để upsert user local. Header định danh hoặc user identifier do client gửi lên trong request body không bao giờ được chấp nhận làm nguồn xác thực.
 
-Missing, malformed, expired, revoked, or invalid tokens return `401 AUTHENTICATION_REQUIRED` in the error envelope.
+Token bị thiếu, sai định dạng, hết hạn, bị thu hồi hoặc không hợp lệ đều trả về `401 AUTHENTICATION_REQUIRED` trong error envelope.
 
-Firebase Admin initializes its default app once before token verification. It uses the configured Firebase project ID and Application Default Credentials, including a configured `GOOGLE_APPLICATION_CREDENTIALS` path when supplied. The API does not embed service-account credentials.
+Firebase Admin khởi tạo default app một lần duy nhất trước khi verify token, dùng Firebase project ID đã cấu hình và Application Default Credentials, kể cả đường dẫn `GOOGLE_APPLICATION_CREDENTIALS` nếu có cấu hình. API không nhúng sẵn service-account credentials trong code.
 
-The local identity write is a PostgreSQL atomic upsert keyed by the verified Firebase UID. Later verified email or display-name changes update only those identity fields; accumulated points and streak values are preserved.
+Việc ghi identity local là một atomic upsert trong PostgreSQL, khóa theo Firebase UID đã xác thực. Những lần thay đổi email hoặc display name sau này chỉ cập nhật đúng các field định danh đó; điểm tích lũy và streak được giữ nguyên.
 
 ## Endpoints
 
@@ -61,7 +63,7 @@ The local identity write is a PostgreSQL atomic upsert keyed by the verified Fir
 
 ### `GET /v1/me`
 
-The endpoint upserts the server-verified identity, then returns the local profile summary.
+Endpoint này upsert identity đã xác thực ở server, sau đó trả về profile summary local.
 
 ```json
 {
@@ -81,7 +83,7 @@ The endpoint upserts the server-verified identity, then returns the local profil
 
 ### `GET /v1/home`
 
-The home payload is assembled only from the August `users` and `workout_catalog` schema. `popular_workouts` contains featured catalog rows in sort order, and `today_plan` is the first row or `null` when no featured workout exists.
+Payload của Home chỉ được dựng từ schema `users` và `workout_catalog` của tháng 8. `popular_workouts` chứa các dòng catalog nổi bật theo đúng thứ tự sắp xếp, còn `today_plan` là dòng đầu tiên trong đó, hoặc `null` nếu chưa có workout nổi bật nào.
 
 ```json
 {
@@ -119,9 +121,9 @@ The home payload is assembled only from the August `users` and `workout_catalog`
 }
 ```
 
-## Generated API Reference
+## Tài liệu API tự sinh
 
-OpenAPI documents structured `200` success envelopes and `401` error envelopes for both protected endpoints. Swagger UI is the generated reference for the `profile`, Home, and authentication-envelope schemas. Routing errors also use the standard error envelope.
+OpenAPI mô tả có cấu trúc cả envelope thành công `200` lẫn envelope lỗi `401` cho hai endpoint được bảo vệ. Swagger UI là tài liệu tham chiếu tự sinh cho schema `profile`, Home và authentication envelope. Lỗi routing cũng dùng chung envelope lỗi chuẩn.
 
 ## Giới hạn request và cache
 

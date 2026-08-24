@@ -1,77 +1,79 @@
 ---
-title: 'HealthStride: vertical slice design'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Thiết kế Vertical Slice tháng 8'
+description: 'Phạm vi và mục tiêu vertical slice HealthStride cho tới 31/8/2026.'
 ---
-# HealthStride August Vertical Slice Design
+# Thiết kế Vertical Slice tháng 8 — HealthStride
 
-**Status:** Approved design
+Đây là bản thiết kế mình lập trước khi bắt tay viết code, để tự trả lời câu hỏi "làm gì trước, làm gì sau, và dừng ở đâu trong tháng 8". Mỗi khi phân vân có nên mở rộng phạm vi hay không, mình quay lại đọc phần Scope bên dưới.
 
-**Goal:** Deliver a working fitness vertical slice by 31 August 2026 while producing concrete evidence for the Fullstack Engineer Hard Skills Matrix.
+**Trạng thái:** Thiết kế đã duyệt
 
-## Scope
+**Mục tiêu:** Hoàn thành một vertical slice thể thao chạy được trước 31 tháng 8 năm 2026, đồng thời tạo ra evidence cụ thể cho Fullstack Engineer Hard Skills Matrix.
 
-The August slice contains:
+## Phạm vi
 
-- Onboarding, Google sign-in, Home, workout logging, and weekly leaderboard.
-- Flutter application UI based on the existing Lato design system and the supplied Figma language.
-- Firebase Authentication, FastAPI, PostgreSQL, Alembic, and Redis.
-- A public technical documentation site deployed on Vercel.
+Slice tháng 8 gồm:
 
-Out of scope for August:
+- Onboarding, đăng nhập Google, Home, log workout và bảng xếp hạng tuần.
+- Giao diện Flutter dựa trên design system Lato hiện có và ngôn ngữ Figma đã cung cấp.
+- Firebase Authentication, FastAPI, PostgreSQL, Alembic và Redis.
+- Trang tài liệu kỹ thuật công khai, triển khai trên Vercel.
 
-- Facebook and LINE sign-in implementation. Their provider flows are documented as September backlog items.
-- Reward redemption, social feed, teams, challenges, nutrition, water, sleep, and full profile management.
-- Firebase Firestore as an application database.
+Ngoài phạm vi tháng 8:
 
-## Architecture
+- Triển khai đăng nhập Facebook và LINE. Luồng của các provider này được ghi vào backlog tháng 9.
+- Đổi thưởng, social feed, gym team, thử thách, dinh dưỡng, nước uống, giấc ngủ và quản lý hồ sơ đầy đủ.
+- Dùng Firebase Firestore làm database ứng dụng.
 
-Flutter owns presentation and sends the Firebase ID token as a Bearer token to FastAPI. FastAPI verifies the token with Firebase Admin, upserts the local profile in PostgreSQL, and owns all business rules. PostgreSQL is the source of truth; Redis is used only for rate limiting and cached leaderboard reads. Firebase owns Authentication, Cloud Messaging, and Analytics.
+## Kiến trúc
 
-Document is a separate Astro static site under `Document/site`. It consumes Markdown content from `Document/HealthStride` and deploys to Vercel.
+Flutter phụ trách phần hiển thị, gửi Firebase ID token dạng Bearer token tới FastAPI. FastAPI verify token qua Firebase Admin, upsert profile local vào PostgreSQL, và giữ toàn bộ business rules. PostgreSQL là nguồn dữ liệu chuẩn (source of truth); Redis chỉ dùng cho rate limiting và cache leaderboard đọc. Firebase phụ trách Authentication, Cloud Messaging và Analytics.
 
-## Mobile Feature Flow
+Document là một site Astro tĩnh riêng dưới `Document/site`. Nó lấy nội dung Markdown từ `Document/HealthStride` và deploy lên Vercel.
 
-1. The onboarding screen follows Figma node `1:604` and routes users to sign-in.
-2. Google sign-in is handled by Firebase Authentication.
-3. After authentication, Home follows Figma node `1:479` and loads profile, popular workouts, and the current plan.
-4. The user selects a workout from the lightweight Explore/catalog experience informed by node `1:350`, then records a completed workout.
-5. The app reloads the Home summary and weekly leaderboard.
+## Luồng tính năng Mobile
 
-Flutter uses feature-first modules: `auth`, `home`, `workouts`, `leaderboard`, and shared UI primitives. All screens use the existing `AppTheme`, Lato assets, and semantic colors. Figma reference layouts are adapted to responsive Flutter widgets rather than copied as absolute-positioned layouts.
+1. Màn onboarding theo node Figma `1:604`, điều hướng người dùng tới màn đăng nhập.
+2. Đăng nhập Google được xử lý bởi Firebase Authentication.
+3. Sau khi xác thực, Home theo node Figma `1:479`, tải profile, popular workouts và kế hoạch hiện tại.
+4. Người dùng chọn một workout từ trải nghiệm Explore/catalog gọn nhẹ dựa trên node `1:350`, sau đó ghi nhận buổi tập đã hoàn thành.
+5. App tải lại tóm tắt Home và bảng xếp hạng tuần.
 
-## Backend Data Flow
+Flutter dùng module theo tính năng (feature-first): `auth`, `home`, `workouts`, `leaderboard` và các UI primitive dùng chung. Mọi màn đều dùng `AppTheme`, asset Lato và màu ngữ nghĩa hiện có. Layout tham chiếu từ Figma được chuyển thành widget Flutter responsive thay vì copy nguyên layout dạng absolute-positioned.
 
-### Authentication
+## Luồng dữ liệu Backend
 
-1. Flutter receives a Firebase ID token from Google sign-in.
-2. Flutter calls FastAPI with `Authorization: Bearer <Firebase ID token>`.
-3. FastAPI verifies the token using Firebase Admin and uses the verified Firebase UID as the identity boundary.
-4. FastAPI creates or updates the corresponding local `users` row.
+### Xác thực
 
-### Workout Write
+1. Flutter nhận Firebase ID token từ đăng nhập Google.
+2. Flutter gọi FastAPI với `Authorization: Bearer <Firebase ID token>`.
+3. FastAPI verify token bằng Firebase Admin và dùng Firebase UID đã xác thực làm ranh giới định danh.
+4. FastAPI tạo mới hoặc cập nhật dòng `users` local tương ứng.
 
-`POST /v1/workouts` requires a request `Idempotency-Key`. In a single PostgreSQL transaction, FastAPI creates a workout log, calculates points, creates a points transaction, updates the user summary and streak, and commits. It then invalidates the affected weekly leaderboard cache key. Any failure rolls back the entire transaction.
+### Ghi Workout
 
-### Leaderboard Read
+`POST /v1/workouts` yêu cầu request có `Idempotency-Key`. Trong một transaction PostgreSQL duy nhất, FastAPI tạo workout log, tính điểm, tạo points transaction, cập nhật tóm tắt user và streak, rồi commit. Sau đó nó invalidate cache key của bảng xếp hạng tuần bị ảnh hưởng. Bất kỳ lỗi nào cũng rollback toàn bộ transaction.
 
-`GET /v1/leaderboards/weekly` first reads `leaderboard:weekly:<week-start>` from Redis. On miss, one request owns a short-lived Redis lock, queries PostgreSQL, stores the rendered leaderboard with a 60-second TTL, and releases the lock. Concurrent readers wait briefly and retry the cache rather than creating a database stampede. A successful workout write deletes the weekly cache key immediately.
+### Đọc Leaderboard
 
-### Rate Limiting
+`GET /v1/leaderboards/weekly` trước tiên đọc `leaderboard:weekly:<week-start>` từ Redis. Khi cache miss, một request giữ lock Redis ngắn hạn, query PostgreSQL, lưu leaderboard đã render với TTL 60 giây, rồi giải phóng lock. Các reader đồng thời chờ ngắn rồi thử lại cache thay vì tạo ra database stampede. Một lần ghi workout thành công sẽ xoá ngay cache key của tuần.
 
-FastAPI implements a Redis sorted-set sliding window keyed by verified Firebase UID. GET requests allow 100 requests per minute and mutation requests allow 10 requests per minute. A rejected request returns `429` with a machine-readable rate-limit error.
+### Giới hạn tốc độ (Rate Limiting)
 
-## Initial Data Model
+FastAPI triển khai sliding window bằng Redis sorted-set, khoá theo Firebase UID đã xác thực. Request GET cho phép 100 request/phút, request mutation cho phép 10 request/phút. Request bị từ chối trả về `429` kèm lỗi rate-limit có thể đọc được bằng máy.
 
-- `users`: Firebase UID, display name, email, lifetime points, available points, current streak, created/updated timestamps.
-- `workout_logs`: user reference, workout type, duration, distance, logged time, calculated calories, awarded points, capped flag, idempotency key.
-- `points_transactions`: user reference, source type and reference, lifetime delta, available delta, created timestamp.
-- `workout_catalog`: seed-only catalog used by Home and the lightweight Explore view.
+## Data Model ban đầu
 
-The schema applies the existing HealthStride business rules: workouts below 10 minutes are stored but receive no points; a workout award is capped at 300; a daily award is capped at 500; lifetime points never decrease; available points must not become negative.
+- `users`: Firebase UID, display name, email, điểm tích luỹ trọn đời, điểm khả dụng, streak hiện tại, timestamp tạo/cập nhật.
+- `workout_logs`: tham chiếu user, loại workout, thời lượng, quãng đường, thời điểm log, calories tính được, điểm được cộng, cờ đã bị chặn trần, idempotency key.
+- `points_transactions`: tham chiếu user, loại nguồn và reference, delta điểm trọn đời, delta điểm khả dụng, timestamp tạo.
+- `workout_catalog`: catalog chỉ dùng để seed, phục vụ Home và view Explore gọn nhẹ.
+
+Schema áp dụng đúng các business rule hiện có của HealthStride: buổi tập dưới 10 phút vẫn được lưu nhưng không tính điểm; một buổi tập bị chặn trần ở 300 điểm; một ngày bị chặn trần ở 500 điểm; điểm trọn đời không bao giờ giảm; điểm khả dụng không được âm.
 
 ## API Contract
 
-All FastAPI responses use one envelope:
+Mọi response FastAPI dùng chung một envelope:
 
 ```json
 {
@@ -81,9 +83,9 @@ All FastAPI responses use one envelope:
 }
 ```
 
-Errors use the same shape, with `data` set to `null` and an error object containing a stable code and user-safe message. Status code policy: `401` invalid or expired token, `403` authorization failure, `409` duplicate idempotency key, `422` request validation failure, `429` rate limited, and `500` unexpected server failure without stack traces.
+Lỗi cũng dùng cùng cấu trúc, với `data` là `null` và một error object chứa mã lỗi ổn định cùng thông điệp an toàn cho người dùng. Chính sách status code: `401` token không hợp lệ hoặc hết hạn, `403` lỗi phân quyền, `409` trùng idempotency key, `422` lỗi validate request, `429` bị rate limit, `500` lỗi server ngoài dự kiến, không kèm stack trace.
 
-Initial endpoints:
+Endpoint ban đầu:
 
 - `GET /v1/me`
 - `GET /v1/home`
@@ -92,59 +94,59 @@ Initial endpoints:
 - `GET /v1/leaderboards/weekly`
 - `GET /health`
 
-OpenAPI and Swagger UI are enabled and treated as the generated API reference.
+OpenAPI và Swagger UI được bật và dùng làm tài liệu API tự sinh.
 
-## Quality And Security
+## Chất lượng và Bảo mật
 
-- Alembic migrations must define both `upgrade` and `downgrade`, with a local forward-and-rollback verification before use.
-- Secrets are environment variables and are never committed.
-- Firebase ID tokens are verified server-side. The API never trusts a client-supplied user ID.
-- Flutter presents loading, empty, retryable error, and unauthenticated states for every remote feature.
-- Token refresh is attempted once; failed refresh returns the user to sign-in.
+- Migration Alembic phải định nghĩa cả `upgrade` và `downgrade`, kiểm chứng forward-and-rollback ở local trước khi dùng.
+- Secret là environment variable, không bao giờ commit vào source.
+- Firebase ID token được verify ở phía server. API không bao giờ tin user ID do client gửi lên.
+- Flutter hiển thị đủ trạng thái loading, empty, lỗi có thể thử lại, và chưa xác thực cho mọi tính năng remote.
+- Refresh token được thử một lần; nếu refresh thất bại, đưa người dùng về màn đăng nhập.
 
-## Test And Evidence Strategy
+## Chiến lược Test và Evidence
 
-- Python unit tests: points, streak, request validation, rate-window decisions, cache-key behavior.
-- Python integration tests: PostgreSQL transaction behavior, Redis cache-aside, invalidation, lock/stampede behavior, authenticated HTTP API.
-- API tests use a Firebase verifier fake; production uses Firebase Admin.
-- Flutter: unit tests for repositories/use cases; widget tests for all loading, empty, error, and success states; integration smoke test against the local API.
-- Database performance: seed at least 1,000 rows, capture `EXPLAIN ANALYZE` for Home, workout history, and leaderboard before and after composite indexes, and publish measured deltas.
-- Performance evidence covers uncached, cached, and concurrent leaderboard requests.
+- Unit test Python: điểm, streak, validate request, quyết định rate-window, hành vi cache-key.
+- Integration test Python: hành vi transaction PostgreSQL, cache-aside Redis, invalidation, hành vi lock/stampede, API HTTP có xác thực.
+- Test API dùng Firebase verifier giả lập; production dùng Firebase Admin thật.
+- Flutter: unit test cho repository/use case; widget test cho mọi trạng thái loading, empty, lỗi, thành công; integration smoke test chạy với API local.
+- Hiệu năng database: seed ít nhất 1.000 dòng, chụp `EXPLAIN ANALYZE` cho Home, lịch sử workout và leaderboard trước/sau khi thêm composite index, công bố chênh lệch đo được.
+- Evidence hiệu năng bao gồm request leaderboard chưa cache, đã cache và đồng thời (concurrent).
 
-## Documentation Site
+## Trang tài liệu
 
-`Document/site` is an Astro site deployed to Vercel. Its content is Markdown and includes:
+`Document/site` là site Astro deploy lên Vercel. Nội dung là Markdown, gồm:
 
-- Architecture and API contract pages.
-- Data and performance reports, migration diary, and security notes.
-- Daily entries under `daily/mobile` and `daily/backend`.
-- August retrospective.
+- Trang kiến trúc và API contract.
+- Báo cáo data/hiệu năng, nhật ký migration và ghi chú bảo mật.
+- Nhật ký hằng ngày dưới `daily/mobile` và `daily/backend`.
+- Retrospective tháng 8.
 
-Every daily entry records objective, work completed, command/test/metric evidence, lesson learned, risk or blocker, and next action. The site makes Mobile and Backend learning trails independently navigable.
+Mỗi nhật ký hằng ngày ghi lại mục tiêu, việc đã làm, evidence (lệnh chạy/test/số đo), bài học, rủi ro hoặc điểm nghẽn, và hành động tiếp theo. Site giúp hai track học tập Mobile và Backend điều hướng độc lập với nhau.
 
-## Matrix Evidence Mapping
+## Đối chiếu Evidence với Matrix
 
-| Matrix pillar | August evidence |
+| Trụ cột trong Matrix | Evidence tháng 8 |
 | --- | --- |
-| Programming & Frameworks | Flutter feature modules and FastAPI module delivered end-to-end. |
-| Software Design & Architecture | Approved design, feature boundaries, ADRs for Firebase/Python/PostgreSQL/Redis. |
-| Data & Database | Schema, Alembic up/down, seeded data, EXPLAIN ANALYZE, composite index, Redis cache-aside. |
-| API Design & Integration | Firebase token verification, stable response envelope, OpenAPI, custom rate limiting. |
-| UI/UX Engineering | Responsive Flutter adaptation of the approved Figma screens plus all remote UI states. |
-| Testing & QA | Unit, integration, widget, and smoke-test evidence. |
-| Performance & Optimization | Before/after query plans and cached versus uncached leaderboard measurements. |
-| Security Engineering | Server-side token verification, environment secrets, validation, rate limiting, error redaction. |
-| Engineering Process | Feature backlog, DoR/DoD, review record, daily evidence. |
-| Technical Documentation | Vercel documentation site, API docs, migration diary, measured retrospective. |
-| Business & Domain Understanding | Existing HealthStride entities and point/streak rules reflected in the implementation. |
+| Programming & Frameworks | Module tính năng Flutter và module FastAPI được giao end-to-end. |
+| Software Design & Architecture | Thiết kế đã duyệt, ranh giới tính năng rõ ràng, ADR cho Firebase/Python/PostgreSQL/Redis. |
+| Data & Database | Schema, Alembic up/down, dữ liệu seed, EXPLAIN ANALYZE, composite index, cache-aside Redis. |
+| API Design & Integration | Verify Firebase token, envelope response ổn định, OpenAPI, rate limiting tự viết. |
+| UI/UX Engineering | Chuyển đổi responsive từ màn Figma đã duyệt sang Flutter, đủ mọi trạng thái UI từ xa. |
+| Testing & QA | Evidence unit, integration, widget và smoke test. |
+| Performance & Optimization | Query plan trước/sau và số đo leaderboard có cache so với không cache. |
+| Security Engineering | Verify token phía server, secret qua environment, validation, rate limiting, che thông tin lỗi. |
+| Engineering Process | Backlog tính năng, DoR/DoD, biên bản review, evidence hằng ngày. |
+| Technical Documentation | Trang tài liệu trên Vercel, tài liệu API, nhật ký migration, retrospective có số đo. |
+| Business & Domain Understanding | Thực thể và quy tắc điểm/streak của HealthStride được phản ánh đúng trong triển khai. |
 
-## Schedule
+## Lịch trình
 
-| Dates | Outcome |
+| Ngày | Kết quả |
 | --- | --- |
-| 19-20 August | FastAPI/PostgreSQL/Alembic/Redis and Firebase foundations; Astro site and daily templates. |
-| 21-23 August | Schema, seed data, migration upgrade/downgrade, query-plan baseline, indexes. |
-| 24-26 August | Google Auth, Firebase token verification, API envelope, Swagger, custom rate limiter, Redis leaderboard. |
-| 27-29 August | Flutter onboarding, sign-in, Home, catalog/workout log, leaderboard. |
-| 30 August | Integration testing, performance evidence, security review. |
-| 31 August | Vercel deploy and Mobile/Backend retrospectives. |
+| 19-20/8 | Nền tảng FastAPI/PostgreSQL/Alembic/Redis và Firebase; site Astro và template nhật ký. |
+| 21-23/8 | Schema, dữ liệu seed, migration upgrade/downgrade, baseline query plan, index. |
+| 24-26/8 | Google Auth, verify Firebase token, envelope API, Swagger, rate limiter tự viết, leaderboard Redis. |
+| 27-29/8 | Flutter onboarding, đăng nhập, Home, catalog/log workout, leaderboard. |
+| 30/8 | Integration testing, evidence hiệu năng, security review. |
+| 31/8 | Deploy Vercel và retrospective Mobile/Backend. |

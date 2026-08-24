@@ -1,392 +1,326 @@
 ---
-title: 'HealthStride: design system'
-description: 'Tài liệu nghiệp vụ, kế hoạch và kiến trúc của HealthStride.'
+title: 'Design System'
+description: 'Hợp đồng thiết kế Flutter: màu, chữ, spacing, layout, motion và component gamification.'
 ---
-# Fitness Application Design System
+# Design System — Fitness Application
 
-## Purpose
+Đây là tài liệu mình tra mỗi lần dựng một màn Flutter mới: token màu nào dùng ở đâu, spacing bao nhiêu, animation dài mấy mili-giây. Ban đầu mình hay tự đặt hex color hoặc font tùy hứng trong widget, sau đó phải sửa lại toàn bộ nên giờ mọi thứ đi qua theme trước.
 
-This document is the design contract for the Fitness Application. Every Flutter
-screen must use these semantic tokens through the app theme rather than placing
-hex colors, font names, or arbitrary text styles directly in widgets.
+## Mục đích
 
-The source is the Figma `Fonts_and_Colors` board, node `1:2` in the Fitness App
-community file. The Flutter implementation will live under `App/lib/theme/`.
+Tài liệu này là hợp đồng thiết kế cho Fitness Application. Mọi màn Flutter phải dùng các token ngữ nghĩa (semantic token) này thông qua app theme, thay vì đặt thẳng hex color, tên font hay text style tuỳ ý trong widget.
 
-## Foundations
+Nguồn là board Figma `Fonts_and_Colors`, node `1:2` trong file cộng đồng Fitness App. Phần triển khai Flutter nằm ở `App/lib/theme/`.
+
+## Nền tảng (Foundations)
 
 ### Typography
 
-The product font family is `Lato`. The Figma source supplies these weights:
+Font chữ của sản phẩm là `Lato`. Nguồn Figma cung cấp các weight sau:
 
-| Token | Lato weight | Flutter `FontWeight` | Usage |
+| Token | Lato weight | Flutter `FontWeight` | Dùng khi nào |
 | --- | --- | --- | --- |
 | `font-regular` | Regular | `w400` | Body copy, helper text |
-| `font-medium` | Medium | `w500` | Emphasized body, labels |
-| `font-semibold` | SemiBold | `w600` | Buttons, tabs, section labels |
-| `font-bold` | Bold | `w700` | Titles, key metrics |
-| `font-extrabold` | ExtraBold | `w800` | Display headings, hero metrics |
+| `font-medium` | Medium | `w500` | Body nhấn mạnh, label |
+| `font-semibold` | SemiBold | `w600` | Button, tab, section label |
+| `font-bold` | Bold | `w700` | Title, chỉ số chính |
+| `font-extrabold` | ExtraBold | `w800` | Display heading, hero metric |
 
-The first Flutter theme pass uses Material 3 text roles with the above weights.
-Font sizes and line heights will be refined from individual Figma screens when
-those screens are implemented; no page may create a second font family.
+Bản theme Flutter đầu tiên dùng text role của Material 3 với các weight trên. Font size và line height sẽ được tinh chỉnh dần theo từng màn Figma khi triển khai; không màn nào được tạo thêm font family thứ hai.
 
-### Color Tokens
+### Token màu
 
-The palette below is taken directly from the Figma source. Semantic names define
-how code uses a color; they do not alter the source values.
+Bảng màu dưới đây lấy trực tiếp từ nguồn Figma. Tên ngữ nghĩa định nghĩa cách code dùng một màu; chúng không thay đổi giá trị gốc.
 
-| Token | Hex | Semantic role |
+| Token | Hex | Vai trò ngữ nghĩa |
 | --- | --- | --- |
-| `color-background` | `#192126` | Primary app background |
-| `color-accent` | `#BBF246` | Primary action, selected state, progress highlight |
-| `color-neutral-500` | `#8B8F92` | Secondary text, inactive icon |
-| `color-neutral-600` | `#5E6468` | Tertiary text, disabled content |
-| `color-neutral-800` | `#384046` | Surface border, elevated dark surface |
-| `color-violet` | `#A48AED` | Workout or chart series A |
-| `color-danger` | `#ED4747` | Destructive action, error state, alert metric |
-| `color-warning` | `#FCC46F` | Warning state, chart series B |
-| `color-info` | `#95CCE3` | Informational state, chart series C |
+| `color-background` | `#192126` | Nền chính của app |
+| `color-accent` | `#BBF246` | Hành động chính, trạng thái đang chọn, điểm nhấn tiến độ |
+| `color-neutral-500` | `#8B8F92` | Text phụ, icon inactive |
+| `color-neutral-600` | `#5E6468` | Text cấp ba, nội dung disabled |
+| `color-neutral-800` | `#384046` | Viền surface, surface tối nổi khối |
+| `color-violet` | `#A48AED` | Chuỗi biểu đồ/workout A |
+| `color-danger` | `#ED4747` | Hành động huỷ/xoá, trạng thái lỗi, chỉ số cảnh báo |
+| `color-warning` | `#FCC46F` | Trạng thái warning, chuỗi biểu đồ B |
+| `color-info` | `#95CCE3` | Trạng thái thông tin, chuỗi biểu đồ C |
 
-### Derived Semantic Roles
+### Vai trò ngữ nghĩa dẫn xuất
 
-`ThemeData` maps the foundation tokens to Material 3 roles as follows:
+`ThemeData` map các token nền tảng sang vai trò Material 3 như sau:
 
-| Material role | Token |
+| Vai trò Material | Token |
 | --- | --- |
 | `ColorScheme.surface` / `scaffoldBackgroundColor` | `color-background` |
 | `ColorScheme.primary` | `color-accent` |
 | `ColorScheme.onPrimary` | `color-background` |
 | `ColorScheme.secondary` | `color-violet` |
 | `ColorScheme.error` | `color-danger` |
-| `ColorScheme.onSurface` | white for readable foreground text |
+| `ColorScheme.onSurface` | trắng, để text nổi rõ trên nền tối |
 | `ColorScheme.onSurfaceVariant` | `color-neutral-500` |
 | `ColorScheme.outline` | `color-neutral-800` |
 
-White foreground text is an implementation semantic required for contrast on the
-dark primary background. It is not a new branded palette color.
+Màu trắng cho text nổi là một ngữ nghĩa triển khai bắt buộc để đủ độ tương phản trên nền primary tối, không phải một màu thương hiệu mới.
 
-## Component Rules
+## Quy tắc Component
 
-### Buttons
+### Button
 
-- Primary button: `color-accent` fill, `color-background` label, Lato SemiBold.
-- Destructive button: `color-danger` fill or outline depending on the screen's
-  destructive-action hierarchy.
-- Disabled buttons use a muted neutral treatment; never reuse the accent color
-  at full opacity.
+- Button chính: nền `color-accent`, label `color-background`, Lato SemiBold.
+- Button huỷ/xoá: nền hoặc viền `color-danger` tuỳ theo mức độ ưu tiên hành động huỷ của từng màn.
+- Button disabled dùng tông neutral nhạt; không bao giờ tái sử dụng màu accent ở full opacity.
 
 ### Text
 
-- Display and screen titles use Lato ExtraBold or Bold.
-- Section headings use Lato Bold or SemiBold.
-- Buttons and navigation labels use Lato SemiBold.
-- Body copy uses Lato Regular; key values can use Medium or Bold.
-- Secondary and inactive copy use `color-neutral-500` or `color-neutral-600`.
+- Display và title màn dùng Lato ExtraBold hoặc Bold.
+- Heading của section dùng Lato Bold hoặc SemiBold.
+- Button và nhãn điều hướng dùng Lato SemiBold.
+- Body copy dùng Lato Regular; giá trị quan trọng có thể dùng Medium hoặc Bold.
+- Text phụ và inactive dùng `color-neutral-500` hoặc `color-neutral-600`.
 
-### Surfaces And States
+### Surface và trạng thái
 
-- App canvas uses `color-background`.
-- Elevated dark elements and dividers use `color-neutral-800`.
-- Do not use `color-violet`, `color-warning`, or `color-info` as generic CTA
-  colors. They are reserved for chart series, workout categories, and semantic
-  states.
-- Error content must use `color-danger`; warning content must use
-  `color-warning`.
+- Nền toàn app dùng `color-background`.
+- Phần tử tối nổi khối và đường phân cách dùng `color-neutral-800`.
+- Không dùng `color-violet`, `color-warning`, hay `color-info` làm màu CTA chung. Các màu này dành riêng cho chuỗi biểu đồ, danh mục workout và trạng thái ngữ nghĩa.
+- Nội dung lỗi phải dùng `color-danger`; nội dung warning phải dùng `color-warning`.
 
-### Charts And Fitness Metrics
+### Biểu đồ và chỉ số thể chất
 
-- Default series order: violet, warning, info, then accent.
-- Never convey a metric state by color alone; pair it with a label, icon, or
-  value change.
-- Keep `color-danger` reserved for negative or alerting meaning, never normal
-  progress.
+- Thứ tự chuỗi mặc định: violet, warning, info, rồi accent.
+- Không bao giờ truyền đạt trạng thái chỉ số chỉ bằng màu sắc; phải đi kèm label, icon hoặc thay đổi giá trị.
+- Giữ `color-danger` chỉ dành cho ý nghĩa tiêu cực/cảnh báo, không dùng cho tiến độ bình thường.
 
-## UX Philosophy — Gamified Social
+## Triết lý UX — Gamified Social
 
-> Source: product decision for HealthStride, 2026-08-10. Not from Figma.
+> Nguồn: quyết định sản phẩm cho HealthStride, 2026-08-10. Không lấy từ Figma.
 
-HealthStride is a hybrid of the **Social & Community** and **Emotional & Hedonic** presets. The
-product exists to make employees *want* to exercise, so the interface must reward action
-immediately and make progress visible to peers.
+HealthStride là sự lai giữa hai preset **Social & Community** và **Emotional & Hedonic**. Sản phẩm tồn tại để khiến nhân viên *muốn* tập luyện, nên giao diện phải thưởng ngay cho hành động và làm tiến độ hiển thị rõ với đồng nghiệp.
 
-| Knob | Setting | Consequence for design |
+| Yếu tố | Thiết lập | Hệ quả cho thiết kế |
 | --- | --- | --- |
-| Content density | Low-medium | One primary action per screen. Cards, not tables. |
-| Device target | Mobile-first | Bottom tab bar, thumb-reachable primary actions. |
-| Animation budget | Moderate-high | Points, level-up and badge moments are animated. Navigation is not. |
-| Confirmation style | Inline + undo | `AlertDialog` only for irreversible actions (redeem points, delete a log). |
-| Gamification | Heavy | Points, levels, badges, streaks and rank are first-class UI, not footnotes. |
-| Identity depth | High | Avatar, level and rank appear wherever a person is named. |
-| Empty states | Inviting | "Log your first workout to earn 100 points", never a bare "No data". |
+| Mật độ nội dung | Thấp–trung bình | Mỗi màn một hành động chính. Dùng card, không dùng bảng. |
+| Thiết bị mục tiêu | Mobile-first | Bottom tab bar, hành động chính trong tầm ngón cái. |
+| Ngân sách animation | Trung bình–cao | Điểm, lên level và huy hiệu có animation. Điều hướng thì không. |
+| Kiểu xác nhận | Inline + undo | `AlertDialog` chỉ dùng cho hành động không thể hoàn tác (đổi điểm, xoá log). |
+| Gamification | Đậm | Điểm, level, huy hiệu, streak và rank là thành phần UI chính, không phải chi tiết phụ. |
+| Độ sâu định danh | Cao | Avatar, level và rank xuất hiện ở mọi nơi có tên người dùng. |
+| Empty state | Mời gọi | "Log buổi tập đầu tiên để nhận 100 điểm", không bao giờ chỉ ghi "Không có dữ liệu". |
 
-### Non-negotiable rules
+### Quy tắc không thương lượng
 
-1. **Every point-earning action gets visible feedback within 300 ms.** Logging a workout must
-   animate the point gain — the reward loop is the product.
-2. **Logging a workout is never more than two taps from any screen.** A persistent action button
-   sits in the bottom navigation.
-3. **Lifetime points and available points are always labelled distinctly.** Never render a bare
-   number that could be read as either (see `business-understanding.md` §6.8).
-4. **Progress is shown, not stated.** Prefer a ring, bar or sparkline over a sentence.
-5. **Tap targets are at least 48×48 dp.** Users interact mid-workout with sweaty hands.
+1. **Mọi hành động được điểm phải có phản hồi hiển thị trong vòng 300 ms.** Log một buổi tập phải có animation tăng điểm — vòng lặp thưởng chính là sản phẩm.
+2. **Log một buổi tập không bao giờ quá hai lần chạm từ bất kỳ màn nào.** Nút hành động cố định nằm trong bottom navigation.
+3. **Điểm tích luỹ trọn đời và điểm khả dụng luôn được gắn nhãn phân biệt rõ ràng.** Không bao giờ hiển thị một con số trần có thể hiểu nhầm là loại kia (xem `business-understanding.md` §6.8).
+4. **Tiến độ được thể hiện bằng hình ảnh, không chỉ bằng câu chữ.** Ưu tiên ring, bar hoặc sparkline hơn một câu mô tả.
+5. **Vùng chạm tối thiểu 48×48 dp.** Người dùng thao tác giữa buổi tập với tay ướt mồ hôi.
 
-### Anti-patterns
+### Anti-pattern
 
-- Dense data tables (reserve tabular layout for the admin screens only)
-- Multi-step wizards for logging a workout
-- Confirmation dialogs on non-destructive actions
-- Conveying rank, streak or achievement state by color alone
-- Sidebar or drawer navigation as the primary nav
+- Bảng dữ liệu dày đặc (chỉ dùng layout dạng bảng cho màn admin)
+- Wizard nhiều bước để log một buổi tập
+- Dialog xác nhận cho hành động không mang tính huỷ/xoá
+- Truyền đạt rank, streak hay thành tích chỉ bằng màu sắc
+- Điều hướng kiểu sidebar hoặc drawer làm nav chính
 
-## Spacing Scale
+## Thang Spacing
 
-> Source: product decision, 8 dp base grid. Not from Figma. Revise when Figma layout frames arrive.
+> Nguồn: quyết định sản phẩm, lưới cơ sở 8 dp. Không lấy từ Figma. Sẽ điều chỉnh khi có frame layout Figma.
 
-| Token | Value | Usage |
+| Token | Giá trị | Dùng khi nào |
 | --- | --- | --- |
-| `space-2xs` | 4 dp | Icon-to-label gap, chip inner padding |
-| `space-xs` | 8 dp | Related elements inside one card |
-| `space-sm` | 12 dp | Card inner padding on compact cards |
-| `space-md` | 16 dp | Default card padding, screen horizontal margin |
-| `space-lg` | 24 dp | Between distinct sections of a screen |
-| `space-xl` | 32 dp | Above a screen's primary call to action |
-| `space-2xl` | 48 dp | Hero metric breathing room, empty-state padding |
+| `space-2xs` | 4 dp | Khoảng cách icon–label, padding trong chip |
+| `space-xs` | 8 dp | Các phần tử liên quan trong cùng một card |
+| `space-sm` | 12 dp | Padding trong card ở card compact |
+| `space-md` | 16 dp | Padding card mặc định, margin ngang của màn |
+| `space-lg` | 24 dp | Giữa các section riêng biệt trong một màn |
+| `space-xl` | 32 dp | Phía trên call-to-action chính của màn |
+| `space-2xl` | 48 dp | Khoảng thở cho hero metric, padding empty-state |
 
-Screen horizontal margin is `space-md` (16 dp) on all screens. Do not vary it per screen.
+Margin ngang của màn là `space-md` (16 dp) trên mọi màn. Không thay đổi theo từng màn.
 
-## Radius And Elevation
+## Radius và Elevation
 
-> Source: product decision. Not from Figma.
+> Nguồn: quyết định sản phẩm. Không lấy từ Figma.
 
-| Token | Value | Usage |
+| Token | Giá trị | Dùng khi nào |
 | --- | --- | --- |
-| `radius-sm` | 8 dp | Chips, badges, small inputs |
-| `radius-md` | 12 dp | Buttons, text fields, list rows |
-| `radius-lg` | 16 dp | Cards, sheets |
-| `radius-xl` | 24 dp | Hero cards, modal sheets |
-| `radius-full` | 999 dp | Avatars, progress rings, pill buttons |
+| `radius-sm` | 8 dp | Chip, badge, input nhỏ |
+| `radius-md` | 12 dp | Button, text field, dòng list |
+| `radius-lg` | 16 dp | Card, sheet |
+| `radius-xl` | 24 dp | Hero card, modal sheet |
+| `radius-full` | 999 dp | Avatar, progress ring, pill button |
 
-The app is dark-canvas, so **elevation is expressed by surface color, not by shadow**.
+App có nền tối, nên **elevation được thể hiện bằng màu surface, không bằng đổ bóng**.
 
-| Level | Surface | Usage |
+| Cấp | Surface | Dùng khi nào |
 | --- | --- | --- |
-| Level 0 | `color-background` | App canvas |
-| Level 1 | `color-neutral-800` at 40% over canvas | Cards, list rows |
-| Level 2 | `color-neutral-800` | Bottom sheets, dialogs, selected states |
-| Level 3 | `color-neutral-800` + 1 dp `color-neutral-600` border | Modal dialogs only |
+| Level 0 | `color-background` | Nền toàn app |
+| Level 1 | `color-neutral-800` ở 40% trên nền | Card, dòng list |
+| Level 2 | `color-neutral-800` | Bottom sheet, dialog, trạng thái đang chọn |
+| Level 3 | `color-neutral-800` + viền 1 dp `color-neutral-600` | Chỉ dùng cho modal dialog |
 
-Drop shadows are permitted only on the floating action button and on bottom sheets, at low
-opacity. Never use shadow to separate two cards on the same surface — use `space-sm` instead.
+Đổ bóng chỉ được phép dùng cho floating action button và bottom sheet, ở opacity thấp. Không bao giờ dùng bóng để tách hai card trên cùng một surface — dùng `space-sm` thay thế.
 
-## Layout Pattern
+## Mẫu Layout (Layout Pattern)
 
-Mobile-first, single-column. The app uses a **bottom tab bar** with five destinations and a
-centered floating action for logging a workout.
+Mobile-first, một cột. App dùng **bottom tab bar** với năm điểm đến và một floating action ở giữa để log buổi tập.
 
 ```
 ┌──────────────────────────────┐
-│  App bar (contextual)        │  56 dp — title + optional action
+│  App bar (theo ngữ cảnh)     │  56 dp — title + hành động tuỳ chọn
 ├──────────────────────────────┤
 │                              │
-│  Scrollable content          │  16 dp horizontal margin
-│  (cards, feed, lists)        │
+│  Nội dung cuộn được          │  margin ngang 16 dp
+│  (card, feed, list)          │
 │                              │
 ├──────────────────────────────┤
 │  Home  Feed  [+]  Rank  Me   │  Bottom navigation, 64 dp + safe area
 └──────────────────────────────┘
 ```
 
-| Destination | Screen | Icon intent |
+| Điểm đến | Màn | Ý nghĩa icon |
 | --- | --- | --- |
-| Home | `SCR-HOME-10` Dashboard | Overview of points, level, streak, goal |
-| Feed | `SCR-SC-20` Activity Feed | Company activity |
-| **Log** | `SCR-WO-11` Log workout | Center floating action, `color-accent` fill |
-| Rank | `SCR-SC-10` Leaderboard | Standings |
-| Me | `SCR-PROF-10` Profile | Identity, history, settings |
+| Home | `SCR-HOME-10` Dashboard | Tổng quan điểm, level, streak, mục tiêu |
+| Feed | `SCR-SC-20` Activity Feed | Hoạt động toàn công ty |
+| **Log** | `SCR-WO-11` Log workout | Floating action ở giữa, nền `color-accent` |
+| Rank | `SCR-SC-10` Leaderboard | Bảng xếp hạng |
+| Me | `SCR-PROF-10` Profile | Định danh, lịch sử, cài đặt |
 
-The reward store `SCR-RW-10` is reached from the Home dashboard and from the Profile screen; it
-does not occupy a tab slot because it is a lower-frequency destination than the five above.
+Cửa hàng phần thưởng `SCR-RW-10` được truy cập từ Home dashboard và từ màn Profile; nó không chiếm một tab riêng vì tần suất truy cập thấp hơn năm điểm đến trên.
 
-Admin screens (`SCR-ADM-*`) use a conventional list-and-detail layout without the bottom tab bar,
-since they serve a different role and a different task rhythm.
+Các màn admin (`SCR-ADM-*`) dùng layout list-and-detail thông thường, không có bottom tab bar, vì chúng phục vụ vai trò và nhịp thao tác khác.
 
 ## Motion
 
-> Source: product decision. Not from Figma.
+> Nguồn: quyết định sản phẩm. Không lấy từ Figma.
 
-| Token | Duration | Curve | Usage |
+| Token | Thời lượng | Curve | Dùng khi nào |
 | --- | --- | --- | --- |
-| `motion-instant` | 100 ms | `Curves.easeOut` | Button press, chip selection |
-| `motion-quick` | 200 ms | `Curves.easeInOut` | Sheet open, tab switch, list item enter |
-| `motion-reward` | 600 ms | `Curves.easeOutBack` | Point gain counter, progress ring fill |
-| `motion-celebrate` | 1200 ms | `Curves.elasticOut` | Level-up and badge-earned overlays |
+| `motion-instant` | 100 ms | `Curves.easeOut` | Nhấn button, chọn chip |
+| `motion-quick` | 200 ms | `Curves.easeInOut` | Mở sheet, chuyển tab, item list xuất hiện |
+| `motion-reward` | 600 ms | `Curves.easeOutBack` | Bộ đếm tăng điểm, progress ring fill |
+| `motion-celebrate` | 1200 ms | `Curves.elasticOut` | Overlay lên level và nhận huy hiệu |
 
-Reward and celebrate motions are the only places where playful easing is permitted. Navigation
-must stay calm — a user opening the app forty times a month will find bouncy navigation tiring.
+Motion reward và celebrate là nơi duy nhất được phép dùng easing "vui nhộn". Điều hướng phải giữ cảm giác điềm tĩnh — người dùng mở app 40 lần một tháng sẽ thấy mệt nếu nav nào cũng nảy.
 
-Respect the platform reduced-motion setting: when it is on, replace `motion-reward` and
-`motion-celebrate` with a cross-fade at `motion-quick` and keep the numeric result identical.
+Tôn trọng thiết lập reduced-motion của hệ điều hành: khi bật, thay `motion-reward` và `motion-celebrate` bằng cross-fade ở `motion-quick`, giữ nguyên kết quả số liệu.
 
-## Component Rules — Extended
+## Quy tắc Component — Mở rộng
 
-### Cards
+### Card
 
-Cards are the primary content container. Default card: `color-neutral-800` at 40% over canvas,
-`radius-lg`, `space-md` padding. Cards never carry a border unless they represent a selected
-state, in which case the border is 1 dp `color-accent`.
+Card là container nội dung chính. Card mặc định: `color-neutral-800` ở 40% trên nền, `radius-lg`, padding `space-md`. Card không bao giờ có viền trừ khi thể hiện trạng thái đang chọn, khi đó viền là 1 dp `color-accent`.
 
 ### Bottom navigation
 
-Five items, `color-accent` for the active item, `color-neutral-500` for inactive. Active state
-must pair the accent color with a filled icon variant — color alone is not a permitted state
-indicator. The center Log action is a 56 dp circle, `color-accent` fill, `color-background` icon.
+Năm mục, `color-accent` cho mục đang active, `color-neutral-500` cho mục inactive. Trạng thái active phải kết hợp màu accent với biến thể icon filled — màu sắc một mình không được phép làm chỉ báo trạng thái. Nút Log ở giữa là hình tròn 56 dp, nền `color-accent`, icon `color-background`.
 
-### Inputs
+### Input
 
-`radius-md`, `color-neutral-800` fill, no outline at rest. Focus state shows a 1 dp
-`color-accent` border. Error state shows a 1 dp `color-danger` border plus a `color-danger`
-helper line below — never color alone.
+`radius-md`, nền `color-neutral-800`, không viền khi ở trạng thái nghỉ. Trạng thái focus có viền 1 dp `color-accent`. Trạng thái lỗi có viền 1 dp `color-danger` cộng dòng helper `color-danger` bên dưới — không bao giờ chỉ dùng màu sắc.
 
-### Bottom sheets
+### Bottom sheet
 
-Logging flows (workout, water, weight) open as bottom sheets rather than full screens, so the
-user keeps context. `radius-xl` on the top corners only, drag handle in `color-neutral-600`,
-Level 2 surface.
+Các luồng log (workout, nước uống, cân nặng) mở dưới dạng bottom sheet thay vì full screen, để người dùng giữ được ngữ cảnh. `radius-xl` chỉ ở hai góc trên, drag handle màu `color-neutral-600`, surface Level 2.
 
-### Empty states
+### Empty state
 
-Every empty state carries three parts: an illustrative icon in `color-neutral-600`, a sentence
-explaining what will appear here, and a primary action that fills it. Never render a bare
-"No data".
+Mọi empty state gồm ba phần: icon minh hoạ màu `color-neutral-600`, một câu giải thích nội dung sẽ xuất hiện ở đây, và một hành động chính để lấp đầy nó. Không bao giờ chỉ hiển thị "Không có dữ liệu".
 
-## Gamification Components
+## Component Gamification
 
-These are HealthStride-specific compositions. They are design contracts, not Material widgets.
+Đây là các thành phần riêng của HealthStride. Chúng là hợp đồng thiết kế, không phải widget Material.
 
-### Points display
+### Hiển thị điểm
 
-Two distinct treatments so the numbers are never confused:
+Hai cách trình bày khác nhau để hai loại số không bao giờ bị nhầm lẫn:
 
-| Value | Treatment | Where |
+| Giá trị | Cách trình bày | Ở đâu |
 | --- | --- | --- |
-| Lifetime points | Lato ExtraBold, `color-accent`, with a small "total" label | Dashboard hero, leaderboard rows |
-| Available points | Lato Bold, white, with a wallet icon and "available" label | Reward store header, redemption sheet |
+| Điểm tích luỹ trọn đời | Lato ExtraBold, `color-accent`, kèm nhãn nhỏ "total" | Hero của Dashboard, dòng trên leaderboard |
+| Điểm khả dụng | Lato Bold, trắng, kèm icon ví và nhãn "available" | Header cửa hàng phần thưởng, sheet đổi thưởng |
 
-Anywhere both appear together, they must be visually adjacent and both labelled.
+Ở bất kỳ đâu hai loại điểm xuất hiện cùng nhau, chúng phải nằm sát nhau về mặt thị giác và đều có nhãn.
 
 ### Level ring
 
-A circular progress ring showing progress toward the next level. Track `color-neutral-800`,
-fill `color-accent`, `radius-full`. The center holds the level number in Lato ExtraBold. Below
-the ring, a line reads "X of Y points to Level N+1" — the ring alone never carries the meaning.
+Vòng tròn progress thể hiện tiến độ tới level tiếp theo. Track màu `color-neutral-800`, fill `color-accent`, `radius-full`. Giữa vòng là số level bằng Lato ExtraBold. Bên dưới vòng, một dòng ghi "X / Y điểm để lên Level N+1" — bản thân vòng tròn không bao giờ tự mang đủ ý nghĩa.
 
 ### Badge tile
 
-Square tile, `radius-lg`. Earned badges use full-color artwork on a Level 1 surface. Unearned
-badges use the same artwork at 30% opacity on the canvas, with the unlock condition rendered
-beneath in `color-neutral-500`. Unearned badges are never hidden — seeing the goal is the point.
+Ô vuông, `radius-lg`. Huy hiệu đã đạt dùng artwork đầy đủ màu trên surface Level 1. Huy hiệu chưa đạt dùng cùng artwork ở 30% opacity trên nền, kèm điều kiện mở khoá hiển thị bên dưới bằng `color-neutral-500`. Huy hiệu chưa đạt không bao giờ bị ẩn — nhìn thấy mục tiêu chính là mục đích.
 
 ### Streak indicator
 
-A flame icon plus a day count. Color escalates with the streak length to give the number
-emotional weight, but the count is always rendered as text beside it:
+Icon ngọn lửa cộng số ngày. Màu tăng dần theo độ dài streak để tạo cảm xúc cho con số, nhưng số ngày luôn được hiển thị bằng text bên cạnh:
 
-| Streak | Icon color |
+| Streak | Màu icon |
 | --- | --- |
-| 1–6 days | `color-neutral-500` |
-| 7–13 days | `color-warning` |
-| 14–29 days | `color-accent` |
-| 30+ days | `color-danger` used as a "hot" accent, paired with a filled flame |
+| 1–6 ngày | `color-neutral-500` |
+| 7–13 ngày | `color-warning` |
+| 14–29 ngày | `color-accent` |
+| 30+ ngày | `color-danger` dùng làm điểm nhấn "hot", kèm icon ngọn lửa filled |
 
-This is the single sanctioned exception to the rule reserving `color-danger` for negative
-meaning. It is permitted only on the streak indicator at 30+ days, and only when the flame icon
-is filled so the state reads as intensity rather than error.
+Đây là ngoại lệ duy nhất được cho phép với quy tắc dành `color-danger` cho ý nghĩa tiêu cực. Ngoại lệ này chỉ áp dụng cho streak indicator ở mốc 30+ ngày, và chỉ khi icon ngọn lửa ở dạng filled để trạng thái đọc là "cường độ cao" chứ không phải lỗi.
 
 ### Leaderboard row
 
-Rank number, avatar, name, lifetime points, and a streak indicator. The current user's own row
-uses a Level 2 surface with a 1 dp `color-accent` left edge so it is findable while scrolling.
-Ranks 1–3 carry a medal glyph in `color-warning`, `color-neutral-500` and a bronze tint
-respectively, always alongside the numeric rank.
+Số thứ hạng, avatar, tên, điểm tích luỹ trọn đời và streak indicator. Dòng của chính người dùng hiện tại dùng surface Level 2 với viền trái 1 dp `color-accent` để dễ tìm khi cuộn. Hạng 1–3 có huy hiệu medal màu `color-warning`, `color-neutral-500` và tông đồng lần lượt, luôn đi kèm số hạng.
 
 ### Point-gain toast
 
-After a workout is saved, a toast animates the earned amount from zero using `motion-reward`.
-When the daily or per-session cap has been applied, the toast must additionally state the reason
-in plain language, for example "300 points awarded — the per-session maximum".
+Sau khi lưu một buổi tập, toast animate số điểm nhận được từ 0 bằng `motion-reward`. Khi trần theo ngày hoặc theo buổi đã được áp dụng, toast phải nêu thêm lý do bằng ngôn ngữ dễ hiểu, ví dụ "Được cộng 300 điểm — mức tối đa cho một buổi tập".
 
 ## Accessibility
 
-- Text contrast against `color-background` must meet WCAG AA. `color-neutral-600` is
-  approved for decorative and disabled content only, never for content the user must read.
-- Never convey state by color alone. Every rule above that assigns a color also assigns an icon,
-  label or numeric value.
-- Minimum tap target 48×48 dp, including icon buttons in the app bar.
-- All progress rings and charts expose a text alternative through `Semantics`.
-- Honor the platform reduced-motion setting as described in the Motion section.
+- Độ tương phản text trên `color-background` phải đạt WCAG AA. `color-neutral-600` chỉ được duyệt cho nội dung trang trí và disabled, không dùng cho nội dung người dùng cần đọc.
+- Không bao giờ truyền đạt trạng thái chỉ bằng màu sắc. Mọi quy tắc gán màu ở trên đều đi kèm icon, nhãn hoặc giá trị số.
+- Vùng chạm tối thiểu 48×48 dp, kể cả icon button trong app bar.
+- Mọi progress ring và biểu đồ đều có phương án thay thế bằng text qua `Semantics`.
+- Tôn trọng thiết lập reduced-motion của hệ điều hành như mô tả ở phần Motion.
 
-## Flutter Contract
+## Hợp đồng Flutter
 
-The Flutter theme implementation is organised into these modules:
+Phần triển khai theme Flutter được tổ chức thành các module sau:
 
-| File | Responsibility | Status |
+| File | Trách nhiệm | Trạng thái |
 | --- | --- | --- |
-| `lib/theme/app_colors.dart` | Immutable foundation and semantic color constants | Implemented |
-| `lib/theme/app_typography.dart` | Lato-based Material 3 text theme | Implemented |
-| `lib/theme/app_theme.dart` | Dark Material 3 `ThemeData` and component-theme defaults | Implemented |
-| `lib/theme/app_spacing.dart` | Spacing, radius and elevation-surface constants | To build |
-| `lib/theme/app_motion.dart` | Duration and curve constants | To build |
+| `lib/theme/app_colors.dart` | Hằng số màu nền tảng và ngữ nghĩa, bất biến | Đã triển khai |
+| `lib/theme/app_typography.dart` | Text theme Material 3 dựa trên Lato | Đã triển khai |
+| `lib/theme/app_theme.dart` | `ThemeData` Material 3 tối và mặc định component-theme | Đã triển khai |
+| `lib/theme/app_spacing.dart` | Hằng số spacing, radius và elevation-surface | Chưa xây dựng |
+| `lib/theme/app_motion.dart` | Hằng số duration và curve | Chưa xây dựng |
 
-Widget code must obtain common colors and typography from
-`Theme.of(context).colorScheme` and `Theme.of(context).textTheme`. It may refer
-to `AppColors` only for named chart series or domain-specific fitness metrics
-which are not represented by a Material color role.
+Code widget phải lấy màu và typography dùng chung từ `Theme.of(context).colorScheme` và `Theme.of(context).textTheme`. Chỉ được tham chiếu `AppColors` cho các chuỗi biểu đồ có tên riêng hoặc chỉ số thể chất đặc thù không có vai trò Material color tương ứng.
 
-Gamification components live under `lib/widgets/gamification/` and must consume the tokens
-above rather than redefining values.
+Component gamification nằm dưới `lib/widgets/gamification/` và phải dùng lại các token ở trên thay vì định nghĩa giá trị mới.
 
-Widget code must obtain common colors and typography from
-`Theme.of(context).colorScheme` and `Theme.of(context).textTheme`. It may refer
-to `AppColors` only for named chart series or domain-specific fitness metrics
-which are not represented by a Material color role.
+## Yêu cầu về Asset
 
-## Asset Requirement
+Trước khi bật theme Flutter, project phải có đủ file font Lato cho các weight Regular, Medium, SemiBold, Bold, ExtraBold trong `App/assets/fonts/` và khai báo trong `App/pubspec.yaml`. Không dựa vào tải font qua mạng lúc runtime.
 
-Before the Flutter theme is enabled, the project must include the Lato font
-files for Regular, Medium, SemiBold, Bold, and ExtraBold under
-`App/assets/fonts/` and declare them in `App/pubspec.yaml`. Do not rely on a
-runtime network font download.
+## Kiểm chứng
 
-## Validation
+- So khớp mỗi màn Figma đã triển khai với tài liệu này trước khi review.
+- Chạy `flutter analyze` và `flutter test` sau khi tích hợp theme.
+- Test trên cả simulator Android và iOS.
+- Kiểm tra độ tương phản text trên nền tối và xác nhận màu sắc không phải chỉ báo duy nhất của một trạng thái.
 
-- Compare each implemented Figma screen against this document before review.
-- Run `flutter analyze` and `flutter test` after theme integration.
-- Test on both Android and iOS simulators.
-- Check text contrast on the dark background and verify that color is not the
-  sole indicator of a state.
+## Phạm vi
 
-## Scope
+Hệ thống này gồm hai lớp, và sự phân biệt này quan trọng khi frame Figma xuất hiện.
 
-This system covers two layers, and the distinction matters when Figma frames arrive.
+**Lớp 1 — từ Figma** (`Fonts_and_Colors`, node `1:2`): font family, các weight và bảng màu. Các giá trị này là chuẩn (authoritative); không thay đổi nếu chưa có nguồn Figma mới.
 
-**Layer 1 — from Figma** (`Fonts_and_Colors`, node `1:2`): font family, font weights, and the
-color palette. These values are authoritative; do not change them without a new Figma source.
+**Lớp 2 — từ quyết định sản phẩm** (2026-08-10): triết lý UX, thang spacing, radius, elevation, layout pattern, motion, quy tắc component mở rộng và component gamification. Các giá trị này được suy ra từ tài liệu nghiệp vụ HealthStride trong `Document/HealthStride/` vì chưa có frame layout Figma. Khi Figma cung cấp frame layout, đối chiếu chúng với lớp này và ghi lại mọi thay đổi ở đây thay vì trong code widget.
 
-**Layer 2 — from product decisions** (2026-08-10): UX philosophy, spacing scale, radius,
-elevation, layout pattern, motion, extended component rules, and the gamification components.
-These were derived from the HealthStride business documents in `Document/HealthStride/` because
-no Figma layout frames exist yet. When Figma supplies layout frames, reconcile them against this
-layer and record any change here rather than in widget code.
+Icon chưa được quy định. App hiện chỉ phụ thuộc `cupertino_icons`; quyết định bộ icon vẫn còn để ngỏ.
 
-Icons are not yet specified. The app currently depends only on `cupertino_icons`; an icon set
-decision is still open.
+## Tài liệu liên quan
 
-## Related Documents
-
-| Document | Relationship |
+| Tài liệu | Liên quan |
 | --- | --- |
-| `Document/HealthStride/screen-flow.md` | Source of the screen inventory this layout pattern serves |
-| `Document/HealthStride/business-understanding.md` | Business rules behind the gamification components |
-| `Document/HealthStride/decision-log.md` | Why lifetime and available points are rendered separately (D-003) |
-| `Document/HealthStride/screens/` | Per-screen design and behaviour specifications |
+| `Document/HealthStride/screen-flow.md` | Nguồn danh sách màn mà layout pattern này phục vụ |
+| `Document/HealthStride/business-understanding.md` | Business rules đằng sau component gamification |
+| `Document/HealthStride/decision-log.md` | Vì sao điểm trọn đời và điểm khả dụng được hiển thị tách biệt (D-003) |
+| `Document/HealthStride/screens/` | Đặc tả thiết kế và hành vi cho từng màn |

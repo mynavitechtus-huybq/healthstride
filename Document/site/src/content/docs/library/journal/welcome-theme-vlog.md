@@ -1,6 +1,6 @@
 ---
-title: 'HealthStride: welcome theme vlog'
-description: 'Nhật ký và tài liệu tham chiếu của dự án HealthStride.'
+title: 'Vlog: Welcome và Theme đa chế độ - 20 tháng 8 năm 2026'
+description: 'Nhật ký xây onboarding Welcome và theme sáng/tối trong Flutter.'
 ---
 # Nhật ký xây dựng: Welcome và Theme đa chế độ
 
