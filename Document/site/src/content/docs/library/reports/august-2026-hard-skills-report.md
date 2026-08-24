@@ -93,3 +93,11 @@ Tôi học được cách đi từ lỗi trên simulator xuống log Backend, r�
 - [Daily Mobile](/daily/mobile/)
 - [Vlog Leaderboard Mobile](/library/journal/leaderboard-mobile-vlog/)
 - [Vlog Log workout Mobile](/library/journal/log-workout-mobile-vlog/)
+
+## Bằng chứng trực quan
+
+Ảnh dưới đây là ảnh chụp thật từ iPhone 17 Simulator sau khi đăng nhập Firebase và tải thành công Home Dashboard.
+
+![Home Dashboard trên iPhone 17 Simulator](/images/evidence/mobile/home-dashboard.png)
+
+Các ảnh `Log workout`, kết quả lưu thành công và Leaderboard sau khi cập nhật sẽ được bổ sung sau khi tôi điều hướng thủ công đến từng màn hình trên Simulator.
