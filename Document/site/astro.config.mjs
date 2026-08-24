@@ -12,8 +12,20 @@ export default defineConfig({
           label: 'Nhật ký hành trình',
           items: [
             { label: 'Tổng quan dự án', slug: 'index' },
-            { label: 'Nhật ký Mobile', slug: 'daily/mobile' },
-            { label: 'Nhật ký Backend', slug: 'daily/backend' },
+            {
+              label: 'Nhật ký Mobile',
+              items: [
+                { label: 'Tổng quan Mobile', slug: 'daily/mobile' },
+                { autogenerate: { directory: 'daily/mobile' } },
+              ],
+            },
+            {
+              label: 'Nhật ký Backend',
+              items: [
+                { label: 'Tổng quan Backend', slug: 'daily/backend' },
+                { autogenerate: { directory: 'daily/backend' } },
+              ],
+            },
           ],
         },
         {
